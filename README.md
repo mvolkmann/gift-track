@@ -1,38 +1,26 @@
-# create-svelte
+# gift-track
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
+This is a web app created with SvelteKit.
 
-## Creating a project
+Here are the steps I took to create this project:
 
-If you're seeing this, you've probably already done this step. Congrats!
+- `npm init svelte@next gift-track`
+   Note that "@next" will change when SvelteKit is out of beta.
+- `cd gift-track`
+- `npm install`
+- `git init`
+- `git add -A`
+- `git commit -m "initial commit"`
+- `git remote add origin git@github.com:mvolkmann/gift-track.git`
+- `git branch -M main`
+- `git push -u origin main`
 
-```bash
-# create a new project in the current directory
-npm init svelte@next
+To run the app locally in your default browser,
+enter `npm run dev -- --open`.
 
-# create a new project in my-app
-npm init svelte@next my-app
-```
+Before creating a production version of your app,
+install an [adapter](https://kit.svelte.dev/docs#adapters)
+for your target environment.
+Then enter `npm run build` to build the production version.
 
-> Note: the `@next` is temporary
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-Before creating a production version of your app, install an [adapter](https://kit.svelte.dev/docs#adapters) for your target environment. Then:
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+To preview the built app locally, enter `npm run preview`.
