@@ -1,29 +1,57 @@
-<script>
+<script lang="ts">
   import Dialog from '$lib/Dialog.svelte';
   import {personStore} from '$lib/stores';
+  import type {Person} from '$lib/types';
   import {sortObjects} from '$lib/util';
 
   $: people = sortObjects(Object.values($personStore), 'name');
   $: console.log('people.svelte x: people =', people);
 
-  let dialog;
+  let dialog: HTMLDialogElement;
+  let selectedPerson: Person | null = null;
+  $: console.log('people.svelte x: selectedPerson =', selectedPerson);
 
   function addPerson() {
     dialog.showModal();
   }
+
+  function deletePerson() {
+    //TODO: Confirm
+    personStore.update(map => {
+      delete map[selectedPerson.id];
+      return map;
+    });
+  }
+
+  function selectPerson(event: Event) {
+    const element = event.target as HTMLSelectElement;
+    const personId = element.value;
+    selectedPerson = $personStore[personId];
+  }
 </script>
 
 <section class="people">
-  <h2>
-    People
-    <button class="bare" on:click={addPerson}>➕</button>
-  </h2>
-  {#each people as person}
-    <div class="person-row">
-      <button class="person truncate">{person.name}</button>
-      <button class="bare">🗑</button>
+  <form on:submit|preventDefault>
+    <div class="row">
+      <label for="person-select">Person</label>
+      <select
+        id="person-select"
+        value={selectedPerson ? selectedPerson.id : 0}
+        on:change={selectPerson}
+      >
+        <option>Select...</option>
+        {#each people as person}
+          <option value={person.id}>
+            {person.name}
+          </option>
+        {/each}
+      </select>
+      <button class="bare" disabled={!selectedPerson} on:click={deletePerson}>
+        🗑
+      </button>
+      <button class="bare" on:click={addPerson}>➕</button>
     </div>
-  {/each}
+  </form>
 </section>
 
 <Dialog bind:dialog title="Add Person">
@@ -31,31 +59,12 @@
 </Dialog>
 
 <style>
-  h2 {
-    margin: 0 0 0.5rem 0;
+  button.bare:not(:first-of-type) {
+    margin-left: 0;
   }
 
-  .people {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-
-    outline: 1px dashed red;
-  }
-
-  .person-row {
+  .row {
     display: flex;
     align-items: center;
-  }
-
-  button.person {
-    width: 5rem;
-  }
-
-  .truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 </style>
