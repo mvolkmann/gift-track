@@ -1,18 +1,30 @@
 <script lang="ts">
   import Dialog from '$lib/Dialog.svelte';
-  import {personStore} from '$lib/stores';
-  import type {Person} from '$lib/types';
+  import {occasionStore, personStore} from '$lib/stores';
+  import type {Occasion, Person} from '$lib/types';
   import {sortObjects} from '$lib/util';
+
+  $: occasions = sortObjects(Object.values($occasionStore), 'name');
+  $: console.log('people.svelte x: occasions =', occasions);
 
   $: people = sortObjects(Object.values($personStore), 'name');
   $: console.log('people.svelte x: people =', people);
 
   let dialog: HTMLDialogElement;
+  let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
   $: console.log('people.svelte x: selectedPerson =', selectedPerson);
 
   function addPerson() {
     dialog.showModal();
+  }
+
+  function deleteOccasion() {
+    //TODO: Confirm
+    occasionStore.update(map => {
+      delete map[selectedOccasion.id];
+      return map;
+    });
   }
 
   function deletePerson() {
@@ -23,10 +35,16 @@
     });
   }
 
+  function selectOccasion(event: Event) {
+    const element = event.target as HTMLSelectElement;
+    const id = element.value;
+    selectedOccasion = $occasionStore[id];
+  }
+
   function selectPerson(event: Event) {
     const element = event.target as HTMLSelectElement;
-    const personId = element.value;
-    selectedPerson = $personStore[personId];
+    const id = element.value;
+    selectedPerson = $personStore[id];
   }
 </script>
 
@@ -47,6 +65,29 @@
         {/each}
       </select>
       <button class="bare" disabled={!selectedPerson} on:click={deletePerson}>
+        🗑
+      </button>
+      <button class="bare" on:click={addPerson}>➕</button>
+    </div>
+    <div class="row">
+      <label for="occasion-select">Occasion</label>
+      <select
+        id="occasion-select"
+        value={selectedOccasion ? selectedOccasion.id : 0}
+        on:change={selectOccasion}
+      >
+        <option>Select...</option>
+        {#each occasions as occasion}
+          <option value={occasion.id}>
+            {occasion.name}
+          </option>
+        {/each}
+      </select>
+      <button
+        class="bare"
+        disabled={!selectedOccasion}
+        on:click={deleteOccasion}
+      >
         🗑
       </button>
       <button class="bare" on:click={addPerson}>➕</button>
