@@ -1,15 +1,10 @@
 <script>
   import Dialog from '$lib/Dialog.svelte';
+  import {personStore} from '$lib/stores';
+  import {sortObjects} from '$lib/util';
 
-  const people = [
-    'Tami',
-    'Amanda',
-    'RC',
-    'Jeremy',
-    'Meghan',
-    'Super Long Name'
-  ];
-  people.sort();
+  $: people = sortObjects(Object.values($personStore), 'name');
+  $: console.log('people.svelte x: people =', people);
 
   let dialog;
 
@@ -25,7 +20,7 @@
   </h2>
   {#each people as person}
     <div class="person-row">
-      <button class="person truncate">{person}</button>
+      <button class="person truncate">{person.name}</button>
       <button class="bare">🗑</button>
     </div>
   {/each}
@@ -54,7 +49,7 @@
     align-items: center;
   }
 
-  .person-row > button {
+  button.person {
     width: 5rem;
   }
 
