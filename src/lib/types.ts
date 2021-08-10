@@ -3,6 +3,7 @@ export type Obj = Record<string, unknown>;
 export type Gift = {
   id?: number;
   description?: string /* ex. color and size can go here */;
+  location?: string /* Where in the house did you put it? */;
   name: string;
   occasionId: number;
   personId: number;

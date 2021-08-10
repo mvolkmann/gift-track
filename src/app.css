@@ -1,3 +1,10 @@
+:root {
+  --bg-color: cornflowerblue;
+  --label-color: white;
+  --primary-color: cornflowerblue;
+  --secondary-color: orange;
+}
+
 .bare {
   background-color: transparent;
   border: none;
@@ -6,17 +13,33 @@
 }
 
 body {
+  background-color: var(--bg-color);
   font-family: sans-serif;
+}
+
+button {
+  color: var(--label-color);
+}
+
+button:disabled .fa-svelte {
+  color: #aaa;
 }
 
 button,
 select {
   border: 1px solid gray;
   border-radius: 0.25rem;
+  cursor: pointer;
   padding: 0.5rem;
 }
 
+.fa-svelte {
+  color: var(--label-color);
+  font-size: 1.2rem;
+}
+
 label {
+  color: var(--label-color);
   font-weight: bold;
   margin-right: 0.5rem;
 }
