@@ -4,8 +4,7 @@
 
   import Dialog from '$lib/Dialog.svelte';
   import ConfirmDialog from '$lib/ConfirmDialog.svelte';
-  import {occasionStore, personStore} from '$lib/stores';
-  import Toast from '$lib/Toast.svelte';
+  import {occasionStore, personStore, toastStore} from '$lib/stores';
   import type {Occasion, Person} from '$lib/types';
   import {sortObjects} from '$lib/util';
 
@@ -16,25 +15,42 @@
   $: console.log('people.svelte x: people =', people);
 
   let confirmDialog: HTMLDialogElement;
+  let deleteType = '';
   let dialog: HTMLDialogElement;
+  let gifts = [];
   let question = '';
   let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
-  let toastMessage = '';
+  $: console.log('people.svelte x: selectedPerson =', selectedPerson);
 
   function addPerson() {
     dialog.showModal();
   }
 
   function confirmed() {
-    personStore.update(map => {
-      delete map[selectedPerson.id];
+    const isPerson = deleteType === 'person';
+
+    const store = isPerson ? personStore : occasionStore;
+    const id = isPerson ? selectedPerson.id : selectedOccasion.id;
+    store.update(map => {
+      delete map[id];
       return map;
     });
-    toastMessage = 'Deleted ' + selectedPerson.name;
+
+    const name = isPerson ? selectedPerson.name : selectedOccasion.name;
+    $toastStore = 'Deleted ' + name;
+
+    if (isPerson) {
+      selectedPerson = null;
+    } else {
+      selectedOccasion = null;
+    }
   }
 
   function deleteOccasion() {
+    deleteType = 'occasion';
+    question = `Are you sure you want to delete ${selectedOccasion.name}?`;
+    confirmDialog.showModal();
     //TODO: Confirm
     occasionStore.update(map => {
       delete map[selectedOccasion.id];
@@ -43,6 +59,7 @@
   }
 
   function deletePerson() {
+    deleteType = 'person';
     question = `Are you sure you want to delete ${selectedPerson.name}?`;
     confirmDialog.showModal();
   }
@@ -64,18 +81,22 @@
   <form on:submit|preventDefault>
     <div class="row">
       <label for="person-select">Person</label>
-      <select
-        id="person-select"
-        value={selectedPerson ? selectedPerson.id : 0}
-        on:change={selectPerson}
-      >
-        <option>Select...</option>
-        {#each people as person}
-          <option value={person.id}>
-            {person.name}
-          </option>
-        {/each}
-      </select>
+      <!-- TODO: Why is this key needed? -->
+      <!-- Without it the value doesn't get cleared after a person is deleted. -->
+      {#key selectedPerson}
+        <select
+          id="person-select"
+          value={selectedPerson ? selectedPerson.id : 0}
+          on:change={selectPerson}
+        >
+          <option>Select...</option>
+          {#each people as person}
+            <option value={person.id}>
+              {person.name}
+            </option>
+          {/each}
+        </select>
+      {/key}
       <button class="bare" disabled={!selectedPerson} on:click={deletePerson}>
         <Icon icon={faTrash} />
       </button>
@@ -115,14 +136,13 @@
          only show those gifts and the total.
          Allow deleting a gift with confirmation.
          Allow adding a gift when both are selected. -->
+    {#each gifts as gift}{/each}
   </form>
 </section>
 
 <Dialog bind:dialog title="Add Person">
   Add form for adding a person here.
 </Dialog>
-
-<Toast message={toastMessage} />
 
 <ConfirmDialog bind:dialog={confirmDialog} {question} on:yes={confirmed} />
 
@@ -139,5 +159,7 @@
   .row {
     display: flex;
     align-items: center;
+
+    margin-bottom: 0.5rem;
   }
 </style>

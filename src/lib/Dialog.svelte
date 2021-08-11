@@ -77,13 +77,10 @@
   }
 
   dialog {
-    /* These properties center the dialog in the browser window. */
-    position: fixed;
-    top: 50%;
-    transform: translate(0, -50%);
-
+    /* This is automatically given margin values
+       that center it in the window. */
     border: none;
-    box-shadow: 0 0 0.625rem darkgray;
+    box-shadow: 3px 3px 3px darkgray;
     padding: 0;
   }
 
@@ -95,7 +92,6 @@
     background-color: var(--secondary-color);
     box-sizing: border-box;
     color: var(--bg-color);
-    font-weight: bold;
     padding: 1rem;
     width: 100%;
   }
@@ -111,7 +107,7 @@
   .title {
     color: var(--label-color);
     flex-grow: 1;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
   }

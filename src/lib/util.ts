@@ -7,7 +7,6 @@ export function sortObjects(
   property: string,
   isNumber = false
 ): Obj[] {
-  console.log('util.ts sortObjects: objects =', objects);
   const p = property;
   const comparator = isNumber
     ? (o1: Obj, o2: Obj) => (o1[p] as number) - (o2[p] as number)

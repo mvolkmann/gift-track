@@ -1,11 +1,14 @@
 <script lang="ts">
-  export let message: string;
+  import {onMount} from 'svelte';
+  import {toastStore} from '$lib/stores';
 
   const SHOW_MS = 3000;
 
   let toast: HTMLDivElement;
 
-  $: if (toast && message) {
+  $: if ($toastStore) displayToast();
+
+  function displayToast() {
     toast.style.top = '0'; // slides into view
     setTimeout(() => {
       const {height} = toast.getBoundingClientRect();
@@ -14,16 +17,12 @@
   }
 
   function transitionEnd() {
-    console.log(
-      'Toast.svelte transitionend: toast.style.top =',
-      toast.style.top
-    );
-    if (toast.style.top.startsWith('-')) message = '';
+    if (toast.style.top.startsWith('-')) $toastStore = '';
   }
 </script>
 
 <div class="toast" bind:this={toast} on:transitionend={transitionEnd}>
-  {message}
+  {$toastStore}
 </div>
 
 <style>
@@ -41,6 +40,6 @@
     font-size: var(--font-size);
     margin: 0;
     padding: var(--padding);
-    transition: top 1s;
+    transition: top 0.5s;
   }
 </style>

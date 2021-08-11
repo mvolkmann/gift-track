@@ -5,20 +5,23 @@
   --secondary-color: orange;
 }
 
-.bare {
-  background-color: transparent;
-  border: none;
-  margin: 0.5rem;
-  padding: 0;
-}
-
 body {
   background-color: var(--bg-color);
+  box-sizing: border-box;
   font-family: sans-serif;
+  height: 100vh;
+  margin: 0;
+  padding: 1rem;
 }
 
 button {
   color: var(--label-color);
+}
+
+button.bare {
+  background-color: transparent;
+  margin: 0 0.5rem;
+  padding: 0;
 }
 
 button:disabled .fa-svelte {
@@ -27,7 +30,7 @@ button:disabled .fa-svelte {
 
 button,
 select {
-  border: 1px solid gray;
+  border: none;
   border-radius: 0.25rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -36,6 +39,10 @@ select {
 .fa-svelte {
   color: var(--label-color);
   font-size: 1.2rem;
+}
+
+h1 {
+  color: var(--secondary-color);
 }
 
 label {

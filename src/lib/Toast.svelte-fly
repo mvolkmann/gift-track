@@ -1,0 +1,40 @@
+<script lang="ts">
+  import {fly} from 'svelte/transition';
+  import {toastStore} from '$lib/stores';
+
+  const inOptions = {duration: 1000, opacity: 1, x: 0, y: -48};
+  const outOptions = {duration: 1000, opacity: 1, x: 0, y: 48};
+  const flyOptions = {duration: 1000, opacity: 1, x: 0, y: 48};
+</script>
+
+{#if $toastStore}
+  <!-- in:fly={inOptions}
+    out:fly={outOptions} -->
+  <div
+    class="toast"
+    transition:fly={flyOptions}
+    on:introend={() => ($toastStore = '')}
+  >
+    {$toastStore}
+  </div>
+{/if}
+
+<style>
+  .toast {
+    --font-size: 1rem;
+    --padding: 1rem;
+    --height: calc(var(--padding) * 2 + var(--font-size));
+
+    /* TODO: THIS IS NOT WORKING! */
+    position: absolute;
+    left: 0;
+    top: calc(var(--height) * -1);
+
+    background-color: var(--secondary-color);
+    color: var(--label-color);
+    font-size: var(--font-size);
+    margin: 0;
+    padding: var(--padding);
+    transition: top 1s;
+  }
+</style>

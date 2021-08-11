@@ -12,6 +12,7 @@ import type {
 export const giftStore = writable<GiftMap>({});
 export const occasionStore = writable<OccasionMap>({});
 export const personStore = writable<PersonMap>({});
+export const toastStore = writable<string>('');
 
 let lastGiftId = 0;
 let lastOccasionId = 0;
