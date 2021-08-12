@@ -6,6 +6,8 @@ export async function get(request) {
 }
 
 export async function post(request) {
+  // If content-type is "application/json",
+  // the body will be parsed to an object.
   const person = addPerson(request.body);
   return {body: person};
 }

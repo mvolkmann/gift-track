@@ -12,8 +12,9 @@ export async function get(request) {
 
 export async function put(request) {
   const {id} = request.params;
-  // content-type is 'text/plain', should be 'application/json'!
-  const person = JSON.parse(request.body); // Why necessary?
+  // If content-type is "application/json",
+  // the body will be parsed to an object.
+  const person = request.body;
   person.id = id;
   const success = updatePerson(person);
   return {status: success ? 200 : 404};
