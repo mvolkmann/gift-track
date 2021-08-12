@@ -7,7 +7,7 @@ export async function del(request) {
 
 export async function get(request) {
   const person = getPerson(request.params.id);
-  return {body: person};
+  return person ? {body: person} : {status: 404};
 }
 
 export async function put(request) {
