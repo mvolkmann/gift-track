@@ -14,6 +14,10 @@ export type Gift = {
 export type GiftMap = Record<number, Gift>;
 //export type GiftMap = {[id: string]: Gift}; //TODO: Is this better?
 
+export type GiftResponse = {body?: Gift; status?: number};
+export type OccasionResponse = {body?: Occasion; status?: number};
+export type PersonResponse = {body?: Person; status?: number};
+
 export type Occasion = {
   id?: number;
   day?: number;
