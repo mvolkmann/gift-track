@@ -1,9 +1,11 @@
 import type {Request} from '@sveltejs/kit';
 import type {Gift} from '$lib/types';
-import {addGift, getGifts} from './data';
+import {addGift, getGifts} from '../../../../../data';
 
-export async function get(): Promise<{body: Gift[]}> {
-  return {body: getGifts()};
+export async function get(request: Request): Promise<{body: Gift[]}> {
+  const personId = Number(request.params.personId);
+  const occasionId = Number(request.params.occasionId);
+  return {body: getGifts(personId, occasionId)};
 }
 
 export async function post(request: Request): Promise<{body: Gift}> {

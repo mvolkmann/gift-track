@@ -52,8 +52,14 @@ export function deletePerson(id: number): boolean {
   return true;
 }
 
-export function getGifts(): Gift[] {
+export function getAllGifts(): Gift[] {
   return Object.values(giftMap);
+}
+
+export function getGifts(personId: number, occasionId: number): Gift[] {
+  return Object.values(giftMap).filter(
+    gift => gift.personId === personId && gift.occasionId === occasionId
+  );
 }
 
 export function getOccasions(): Occasion[] {
@@ -121,6 +127,16 @@ addGift({
 });
 
 addGift({
+  description: 'Momentum',
+  name: 'water bottle',
+  occasionId: birthday.id,
+  personId: tami.id,
+  price: 15,
+  url:
+    'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
+});
+
+addGift({
   description: 'Get the latest when it comes out.',
   name: 'iPhone',
   occasionId: christmas.id,
@@ -128,3 +144,5 @@ addGift({
   price: 1000,
   url: 'https://www.apple.com/iphone/'
 });
+
+console.log('data.ts x: giftMap =', giftMap);
