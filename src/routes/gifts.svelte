@@ -9,10 +9,8 @@
   import {sortObjects} from '$lib/util';
 
   $: occasions = sortObjects(Object.values($occasionStore), 'name');
-  $: console.log('people.svelte x: occasions =', occasions);
 
   $: people = sortObjects(Object.values($personStore), 'name');
-  $: console.log('people.svelte x: people =', people);
 
   let confirmDialog: HTMLDialogElement;
   let deleteType = '';
@@ -21,7 +19,6 @@
   let question = '';
   let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
-  $: console.log('people.svelte x: selectedPerson =', selectedPerson);
 
   function addPerson() {
     dialog.showModal();
