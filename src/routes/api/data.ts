@@ -145,4 +145,4 @@ addGift({
   url: 'https://www.apple.com/iphone/'
 });
 
-console.log('data.ts x: giftMap =', giftMap);
+//console.log('data.ts x: giftMap =', giftMap);
