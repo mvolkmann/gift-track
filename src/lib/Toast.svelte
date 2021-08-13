@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {onMount} from 'svelte';
   import {toastStore} from '$lib/stores';
 
   const SHOW_MS = 3000;

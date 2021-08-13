@@ -29,6 +29,7 @@ export type OccasionMap = Record<number, Occasion>;
 
 export type Person = {
   id?: number;
+  editing?: boolean;
   name: string;
   month: number /* birth */;
   day: number /* birth */;

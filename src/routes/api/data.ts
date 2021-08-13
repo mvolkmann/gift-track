@@ -97,6 +97,7 @@ export function updateOccasion(occasion: Occasion): boolean {
 export function updatePerson(person: Person): boolean {
   if (!personMap[person.id]) return false;
   personMap[person.id] = person;
+  console.log('data.ts updatePerson: personMap =', personMap);
   return true;
 }
 
