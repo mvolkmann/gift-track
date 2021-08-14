@@ -19,15 +19,6 @@
 
   let adding = false;
 
-  let name = '';
-  let month = 1;
-  let day = 1;
-  let year = new Date().getFullYear();
-
-  function addPerson() {
-    adding = true;
-  }
-
   function addedPerson(event: CustomEvent) {
     const newPerson = event.detail as Person;
     people.push(newPerson);
@@ -47,11 +38,18 @@
 <section class="people">
   <h2>
     People
-    <IconButton color="white" icon={faUserPlus} on:click={addPerson} />
+    <IconButton
+      color="white"
+      icon={faUserPlus}
+      on:click={() => (adding = true)}
+    />
   </h2>
   <section class="scroll">
     {#if adding}
-      <PersonAddForm on:added={addedPerson} />
+      <PersonAddForm
+        on:added={addedPerson}
+        on:cancel={() => (adding = false)}
+      />
     {:else}
       {#each people as person}
         <PersonEditForm

@@ -48,14 +48,13 @@
     />
     <LabelledInput label="Year" name="year" type="number" bind:value={year} />
   </div>
-  <button class="add-btn">Add</button>
+  <div class="buttons">
+    <button>Add</button>
+    <button type="button" on:click={() => dispatch('cancel')}>Cancel</button>
+  </div>
 </form>
 
 <style>
-  .add-btn {
-    color: black;
-  }
-
   .birthday-inputs {
     display: flex;
     gap: 1rem;
@@ -66,5 +65,14 @@
 
   .birthday-inputs > :global(.labelled-input > input) {
     width: 2.5rem;
+  }
+
+  button {
+    color: black;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 1rem;
   }
 </style>
