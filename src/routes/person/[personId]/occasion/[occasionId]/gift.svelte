@@ -1,5 +1,7 @@
-<script context="module">
-  export async function load({page, fetch, session, context}) {
+<script context="module" lang="ts">
+  import type {LoadInput, LoadOutput} from '@sveltejs/kit/types/page';
+
+  export async function load({page, fetch}: LoadInput): Promise<LoadOutput> {
     const personId = Number(page.params.personId);
     const occasionId = Number(page.params.occasionId);
 
@@ -17,10 +19,12 @@
   }
 </script>
 
-<script>
-  export let gifts;
-  export let occasion;
-  export let person;
+<script lang="ts">
+  import type {Gift, Occasion, Person} from '$lib/types';
+
+  export let gifts: Gift[];
+  export let occasion: Occasion;
+  export let person: Person;
 </script>
 
 <h2>{occasion.name} Gifts for {person.name}</h2>

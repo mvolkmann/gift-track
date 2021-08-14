@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import {ItemKind} from '$lib/types';
-  import {loadKind} from './item';
+  import {loadKind} from './loader';
 
   const kind = ItemKind.PERSON;
 
