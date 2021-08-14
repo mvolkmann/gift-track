@@ -15,7 +15,6 @@
     faTrash,
     faUserPlus
   } from '@fortawesome/free-solid-svg-icons';
-  import {tick} from 'svelte';
 
   import DateInput from '$lib/DateInput.svelte';
   import Dialog from '$lib/Dialog.svelte';
@@ -42,10 +41,12 @@
   }
 
   function cancelEdit(person: Person) {
+    // Restore previous values.
     person.name = savedPerson.name;
     person.month = savedPerson.month;
     person.day = savedPerson.day;
     person.year = savedPerson.year;
+
     person.editing = false;
     people = people; // trigger reactivity
   }
@@ -57,8 +58,8 @@
 
   async function createPerson() {
     const person: Person = {name, month, day};
+    // year is not required.
     if (year) person.year = year;
-    console.log('people.svelte createPerson: person =', person);
 
     try {
       const res = await fetch('/api/person', {
@@ -75,27 +76,31 @@
   }
 
   async function deletePerson() {
-    dialog.close();
     const url = '/api/person/' + selectedPerson.id;
     try {
       const res = await fetch(url, {method: 'DELETE'});
       console.log('people.svelte deletePerson: res =', res);
       people = people.filter(p => p.id !== selectedPerson.id);
       selectedPerson = null;
+      dialog.close();
     } catch (e) {
       console.error('people.svelte deletePerson: e =', e);
     }
   }
 
   function editPerson(event: Event, person: Person) {
+    // Copy current data so it can be restored if editing is cancelled.
     savedPerson = {...person};
-    const input = getInput(event);
+
+    // Move focus into the name input.
+    const input = getFirstInput(event);
     input.focus();
+
     person.editing = true;
     people = people; // trigger reactivity
   }
 
-  function getInput(event: Event) {
+  function getFirstInput(event: Event) {
     const element = event.target as HTMLElement;
     const container = element.closest('.person');
     return container.querySelector('input');
@@ -104,6 +109,8 @@
   async function updatePerson(event: Event, person: Person) {
     const url = '/api/person/' + person.id;
     delete person.editing;
+
+    //TODO: Don't allow duplicate names.
 
     try {
       const res = await fetch(url, {
@@ -115,9 +122,11 @@
       //const text = await res.text();
       //console.log('people.svelte updatePerson: text =', text);
 
+      // Move focus out of the in the input that has it.
       const form = event.target as HTMLFormElement;
-      const input = form.querySelector('input');
-      input.blur();
+      const input = form.querySelector('input:focus') as HTMLInputElement;
+      input?.blur();
+
       people = people; // trigger reactivity
     } catch (e) {
       console.error('people.svelte updatePerson: e =', e);
