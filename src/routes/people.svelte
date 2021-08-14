@@ -34,7 +34,8 @@
   let savedPerson: Person;
   let selectedPerson: Person;
 
-  $: canAdd = Boolean(name && month && day);
+  //TODO: Remove this if HTML form validation can handle this.
+  //$: canAdd = Boolean(name && month && day);
 
   function addPerson() {
     adding = true;
@@ -141,18 +142,21 @@
   </h2>
   <section class="scroll">
     {#if adding}
+      <!-- Render form for adding a new person. -->
       <form class="add-form" on:submit|preventDefault={createPerson}>
-        <LabelledInput label="Name" name="name" bind:value={name} />
+        <LabelledInput label="Name" name="name" required bind:value={name} />
         <div class="birthday-inputs">
           <LabelledInput
             label="Month"
             name="month"
+            required
             type="number"
             bind:value={month}
           />
           <LabelledInput
             label="Day"
             name="day"
+            required
             type="number"
             bind:value={day}
           />
@@ -163,9 +167,11 @@
             bind:value={year}
           />
         </div>
-        <button class="add-btn" disabled={!canAdd}>Add</button>
+        <!-- <button class="add-btn" disabled={!canAdd}>Add</button> -->
+        <button class="add-btn">Add</button>
       </form>
     {:else}
+      <!-- Render list of people. -->
       {#each people as person}
         <form
           class="person"
@@ -178,7 +184,6 @@
             readonly={!person.editing}
             bind:value={person.name}
           />
-          <!-- <div class="birthday">{getBirthday(person)}</div> -->
           <DateInput
             editing={person.editing}
             bind:month={person.month}
@@ -241,10 +246,9 @@
   .buttons {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
 
-    margin-top: 0.5rem;
-    width: 100%;
+    margin-left: 1rem;
   }
 
   .buttons button {
@@ -257,7 +261,8 @@
     align-items: center;
     gap: 1rem;
 
-    margin: 0;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
   }
 
   input {
@@ -266,7 +271,6 @@
     padding: 0.5rem;
     flex-grow: 1;
     margin-right: 0.5rem;
-    /* width: 4rem; */
   }
 
   input[readonly] {
@@ -298,7 +302,7 @@
     border-radius: 0.5rem;
     box-sizing: border-box;
     margin-bottom: 1rem;
-    padding-left: 0.5rem;
+    padding: 0.5rem;
     width: 100%;
   }
 

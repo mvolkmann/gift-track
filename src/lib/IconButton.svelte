@@ -22,6 +22,7 @@
     display: inline-block;
 
     background-color: transparent;
+    padding: 0;
   }
 
   .icon-button :global(svg) {

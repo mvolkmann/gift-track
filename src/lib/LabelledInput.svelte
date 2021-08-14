@@ -3,6 +3,7 @@
   export let max = -1;
   export let min = -1;
   export let name: string;
+  export let required = false;
   export let type = 'text';
   export let value: string | number;
 
@@ -19,11 +20,11 @@
 <div class="labelled-input">
   <label for={name}>{label}</label>
   {#if type === 'date'}
-    <input type="date" bind:value />
+    <input type="date" {required} bind:value />
   {:else if type === 'number'}
-    <input type="number" bind:value {...props} />
+    <input type="number" {required} bind:value {...props} />
   {:else}
-    <input type="text" bind:value />
+    <input type="text" {required} bind:value />
   {/if}
 </div>
 
