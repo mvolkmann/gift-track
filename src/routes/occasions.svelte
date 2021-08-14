@@ -4,9 +4,7 @@
 
   const kind = ItemKind.OCCASION;
 
-  export async function load(arg) {
-    return loadKind(kind, arg);
-  }
+  export const load = arg => loadKind(kind, arg);
 </script>
 
 <script type="ts">
