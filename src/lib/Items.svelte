@@ -37,7 +37,9 @@
     {#if adding}
       <ItemAddForm {kind} on:add={addItem} on:cancel={() => (adding = false)} />
     {:else}
-      {#each items as item}
+      <!-- Using a key in this #each is required for
+           proper updates after an item is deleted. -->
+      {#each items as item (item.id)}
         <ItemEditForm
           {item}
           {kind}
