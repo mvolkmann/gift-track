@@ -57,7 +57,7 @@
   main {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - 1rem); /* for top padding */
   }
 
   main > * {
