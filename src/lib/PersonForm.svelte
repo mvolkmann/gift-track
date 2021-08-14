@@ -124,8 +124,9 @@
 
 <Dialog bind:dialog title="Confirm Delete">
   <div class="question">
-    Are you sure you want<br />
-    to delete {selectedPerson ? selectedPerson.name : ''}?
+    Are you sure you want to delete {selectedPerson ? selectedPerson.name : ''}?
+    This will also delete all of {selectedPerson ? selectedPerson.name : ''}'s
+    gifts.
   </div>
   <div class="buttons">
     <button on:click={deletePerson}>Yes</button>
