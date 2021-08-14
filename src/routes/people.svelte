@@ -14,6 +14,8 @@
     faTrash,
     faUserPlus
   } from '@fortawesome/free-solid-svg-icons';
+  import {tick} from 'svelte';
+
   import DateInput from '$lib/DateInput.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
@@ -23,11 +25,13 @@
 
   let adding = false;
 
+  let deletePopup: HTMLDivElement;
   let name = '';
   let month = 1;
   let day = 1;
   let year: number | undefined;
-  let saved: Person;
+  let savedPerson: Person;
+  let selectedPerson: Person;
 
   $: canAdd = Boolean(name && month && day);
 
@@ -35,13 +39,30 @@
     adding = true;
   }
 
-  function cancelEdit(person) {
-    person.name = saved.name;
-    person.month = saved.month;
-    person.day = saved.day;
-    person.year = saved.year;
+  function cancelEdit(person: Person) {
+    person.name = savedPerson.name;
+    person.month = savedPerson.month;
+    person.day = savedPerson.day;
+    person.year = savedPerson.year;
     person.editing = false;
     people = people; // trigger reactivity
+  }
+
+  async function confirmDelete(event: Event, person: Person) {
+    selectedPerson = person;
+    deletePopup.classList.add('show');
+    // The popup must be rendered in order to get its size, so wait for that.
+    await tick();
+
+    // Position the popup so its bottom is a little above the button top
+    // and its right is at the button right.
+    const button = event.target as HTMLButtonElement;
+    const buttonRect = button.getBoundingClientRect();
+    const popupRect = deletePopup.getBoundingClientRect();
+    deletePopup.style.top =
+      Math.max(buttonRect.y - popupRect.height - 5, 0) + 'px';
+    deletePopup.style.left =
+      Math.max(buttonRect.x + buttonRect.width - popupRect.width, 0) + 'px';
   }
 
   async function createPerson() {
@@ -63,22 +84,21 @@
     }
   }
 
-  async function deletePerson(person: Person) {
-    //TODO: Confirm delete.
-    const url = '/api/person/' + person.id;
+  async function deletePerson() {
+    hidePopup();
+    const url = '/api/person/' + selectedPerson.id;
     try {
       const res = await fetch(url, {method: 'DELETE'});
       console.log('people.svelte deletePerson: res =', res);
-      //const text = await res.text();
-      //console.log('people.svelte deletePerson: text =', text);
-      people = people.filter(p => p.id !== person.id);
+      people = people.filter(p => p.id !== selectedPerson.id);
+      selectedPerson = null;
     } catch (e) {
       console.error('people.svelte deletePerson: e =', e);
     }
   }
 
   function editPerson(event: Event, person: Person) {
-    saved = {...person};
+    savedPerson = {...person};
     const input = getInput(event);
     input.focus();
     person.editing = true;
@@ -89,6 +109,10 @@
     const element = event.target as HTMLElement;
     const container = element.closest('.person');
     return container.querySelector('input');
+  }
+
+  function hidePopup() {
+    deletePopup.classList.remove('show');
   }
 
   async function updatePerson(event: Event, person: Person) {
@@ -103,14 +127,14 @@
       });
       console.log('people.svelte savePerson: res =', res);
       //const text = await res.text();
-      //console.log('people.svelte deletePerson: text =', text);
+      //console.log('people.svelte updatePerson: text =', text);
 
       const form = event.target as HTMLFormElement;
       const input = form.querySelector('input');
       input.blur();
       people = people; // trigger reactivity
     } catch (e) {
-      console.error('people.svelte deletePerson: e =', e);
+      console.error('people.svelte updatePerson: e =', e);
     }
   }
 </script>
@@ -170,7 +194,7 @@
               />
               <IconButton
                 icon={faTrash}
-                on:click={() => deletePerson(person)}
+                on:click={e => confirmDelete(e, person)}
               />
             {/if}
           </div>
@@ -178,6 +202,17 @@
       {/each}
     {/if}
   </section>
+
+  <div class="delete-popup" bind:this={deletePopup}>
+    <div class="question">
+      Are you sure you<br />
+      want to delete {selectedPerson ? selectedPerson.name : ''}?
+    </div>
+    <div class="buttons">
+      <button on:click={deletePerson}>Yes</button>
+      <button on:click={hidePopup}>No</button>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -187,6 +222,35 @@
 
   .buttons {
     display: flex;
+  }
+
+  .delete-popup {
+    --shadow: 5px;
+
+    background-color: linen;
+    box-shadow: 0 0 var(--shadow) var(--shadow) gray;
+    display: none;
+    padding: 0.5rem;
+    position: absolute;
+    width: 10rem;
+  }
+
+  .delete-popup:global(.show) {
+    display: block;
+  }
+
+  .delete-popup > .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .delete-popup button {
+    background-color: var(--secondary-color);
+    flex-grow: 1;
   }
 
   h2 {
