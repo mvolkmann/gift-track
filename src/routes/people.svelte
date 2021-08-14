@@ -18,6 +18,7 @@
   import {tick} from 'svelte';
 
   import DateInput from '$lib/DateInput.svelte';
+  import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Person} from '$lib/types';
@@ -26,7 +27,7 @@
 
   let adding = false;
 
-  let deletePopup: HTMLDivElement;
+  let dialog: HTMLDialogElement;
   let name = '';
   let month = 1;
   let day = 1;
@@ -51,19 +52,7 @@
 
   async function confirmDelete(event: Event, person: Person) {
     selectedPerson = person;
-    deletePopup.classList.add('show');
-    // The popup must be rendered in order to get its size, so wait for that.
-    await tick();
-
-    // Position the popup so its bottom is a little above the button top
-    // and its right is at the button right.
-    const button = event.target as HTMLButtonElement;
-    const buttonRect = button.getBoundingClientRect();
-    const popupRect = deletePopup.getBoundingClientRect();
-    deletePopup.style.top =
-      Math.max(buttonRect.y - popupRect.height - 5, 0) + 'px';
-    deletePopup.style.left =
-      Math.max(buttonRect.x + buttonRect.width - popupRect.width, 0) + 'px';
+    dialog.showModal();
   }
 
   async function createPerson() {
@@ -86,7 +75,7 @@
   }
 
   async function deletePerson() {
-    hidePopup();
+    dialog.close();
     const url = '/api/person/' + selectedPerson.id;
     try {
       const res = await fetch(url, {method: 'DELETE'});
@@ -110,10 +99,6 @@
     const element = event.target as HTMLElement;
     const container = element.closest('.person');
     return container.querySelector('input');
-  }
-
-  function hidePopup() {
-    deletePopup.classList.remove('show');
   }
 
   async function updatePerson(event: Event, person: Person) {
@@ -211,16 +196,16 @@
     {/if}
   </section>
 
-  <div class="delete-popup" bind:this={deletePopup}>
+  <Dialog bind:dialog title="Confirm Delete">
     <div class="question">
-      Are you sure you<br />
-      want to delete {selectedPerson ? selectedPerson.name : ''}?
+      Are you sure you want<br />
+      to delete {selectedPerson ? selectedPerson.name : ''}?
     </div>
     <div class="buttons">
       <button on:click={deletePerson}>Yes</button>
-      <button on:click={hidePopup}>No</button>
+      <button on:click={() => dialog.close()}>No</button>
     </div>
-  </div>
+  </Dialog>
 </section>
 
 <style>
@@ -246,25 +231,6 @@
 
   .buttons {
     display: flex;
-  }
-
-  .delete-popup {
-    --shadow: 5px;
-
-    background-color: linen;
-    box-shadow: 0 0 var(--shadow) var(--shadow) gray;
-    display: none;
-    padding: 0.5rem;
-    position: absolute;
-    width: 10rem;
-  }
-
-  .delete-popup:global(.show) {
-    display: block;
-  }
-
-  .delete-popup > .buttons {
-    display: flex;
     justify-content: center;
     gap: 0.5rem;
 
@@ -272,7 +238,7 @@
     width: 100%;
   }
 
-  .delete-popup button {
+  .buttons button {
     background-color: var(--secondary-color);
     flex-grow: 1;
   }

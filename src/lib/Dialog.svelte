@@ -92,7 +92,7 @@
     background-color: var(--secondary-color);
     box-sizing: border-box;
     color: var(--bg-color);
-    padding: 1rem;
+    padding: 0.5rem;
     width: 100%;
   }
 
