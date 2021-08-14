@@ -11,8 +11,8 @@
   import {faUserPlus} from '@fortawesome/free-solid-svg-icons';
 
   import IconButton from '$lib/IconButton.svelte';
-  import LabelledInput from '$lib/LabelledInput.svelte';
-  import PersonForm from '$lib/PersonForm.svelte';
+  import PersonAddForm from '$lib/PersonAddForm.svelte';
+  import PersonEditForm from '$lib/PersonEditForm.svelte';
   import type {Person} from '$lib/types';
 
   export let people: Person[];
@@ -28,23 +28,10 @@
     adding = true;
   }
 
-  async function createPerson() {
-    const person: Person = {name, month, day};
-    // year is not required.
-    if (year) person.year = year;
-
-    try {
-      const res = await fetch('/api/person', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(person)
-      });
-      const newPerson = await res.json();
-      people.push(newPerson);
-      adding = false;
-    } catch (e) {
-      console.error('people.svelte createPerson: e =', e);
-    }
+  function addedPerson(event: CustomEvent) {
+    const newPerson = event.detail as Person;
+    people.push(newPerson);
+    adding = false;
   }
 
   function deletePerson(event: CustomEvent) {
@@ -64,37 +51,10 @@
   </h2>
   <section class="scroll">
     {#if adding}
-      <!-- Render form for adding a new person. -->
-      <form class="add-form" on:submit|preventDefault={createPerson}>
-        <LabelledInput label="Name" name="name" required bind:value={name} />
-        <div class="birthday-inputs">
-          <LabelledInput
-            label="Month"
-            name="month"
-            required
-            type="number"
-            bind:value={month}
-          />
-          <LabelledInput
-            label="Day"
-            name="day"
-            required
-            type="number"
-            bind:value={day}
-          />
-          <LabelledInput
-            label="Year"
-            name="year"
-            type="number"
-            bind:value={year}
-          />
-        </div>
-        <button class="add-btn">Add</button>
-      </form>
+      <PersonAddForm on:added={addedPerson} />
     {:else}
-      <!-- Render list of people. -->
       {#each people as person}
-        <PersonForm
+        <PersonEditForm
           {person}
           on:delete={deletePerson}
           on:update={updatePeople}
@@ -105,26 +65,6 @@
 </section>
 
 <style>
-  .add-btn {
-    color: black;
-  }
-
-  .birthday-inputs {
-    display: flex;
-    gap: 1rem;
-
-    box-sizing: border-box;
-    width: 100%;
-  }
-
-  /* .birthday-inputs > :global(.labelled-input) {
-    flex-grow: 1;
-  } */
-
-  .birthday-inputs > :global(.labelled-input > input) {
-    width: 2.5rem;
-  }
-
   h2 {
     display: flex;
     align-items: center;

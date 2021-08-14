@@ -20,13 +20,16 @@ export type PersonResponse = {body?: Person; status?: number};
 
 export type Occasion = {
   id?: number;
-  day?: number;
-  month?: number;
+  editing?: boolean;
   name: string;
+  month: number /* birth */;
+  day: number /* birth */;
+  year?: number /* birth */;
 };
 
 export type OccasionMap = Record<number, Occasion>;
 
+// Note that this is the same as Occasion.
 export type Person = {
   id?: number;
   editing?: boolean;
