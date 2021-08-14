@@ -22,7 +22,7 @@
         body: JSON.stringify(person)
       });
       const newPerson = await res.json();
-      dispatch('added', newPerson);
+      dispatch('add', newPerson);
     } catch (e) {
       console.error('people.svelte createPerson: e =', e);
     }

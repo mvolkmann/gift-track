@@ -19,7 +19,7 @@
 
   let adding = false;
 
-  function addedPerson(event: CustomEvent) {
+  function addPerson(event: CustomEvent) {
     const newPerson = event.detail as Person;
     people.push(newPerson);
     adding = false;
@@ -46,10 +46,7 @@
   </h2>
   <section class="scroll">
     {#if adding}
-      <PersonAddForm
-        on:added={addedPerson}
-        on:cancel={() => (adding = false)}
-      />
+      <PersonAddForm on:add={addPerson} on:cancel={() => (adding = false)} />
     {:else}
       {#each people as person}
         <PersonEditForm
