@@ -1,7 +1,8 @@
-<script context="module">
+<script context="module" lang="ts">
   export async function load({fetch}) {
     const res = await fetch('/api/person');
     const people = await res.json();
+    people.sort((p1: Person, p2: Person) => p1.name.localeCompare(p2.name));
     return {props: {people}};
   }
 </script>
@@ -29,7 +30,7 @@
   let name = '';
   let month = 1;
   let day = 1;
-  let year: number | undefined;
+  let year = new Date().getFullYear();
   let savedPerson: Person;
   let selectedPerson: Person;
 
@@ -68,6 +69,7 @@
   async function createPerson() {
     const person: Person = {name, month, day};
     if (year) person.year = year;
+    console.log('people.svelte createPerson: person =', person);
 
     try {
       const res = await fetch('/api/person', {
@@ -75,10 +77,9 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(person)
       });
-      console.log('people.svelte x: res =', res);
-      const json = await res.json();
-      console.log('people.svelte x: json =', json);
-      person.editing = false;
+      const newPerson = await res.json();
+      people.push(newPerson);
+      adding = false;
     } catch (e) {
       console.error('people.svelte createPerson: e =', e);
     }
@@ -146,21 +147,28 @@
   </h2>
   <section class="scroll">
     {#if adding}
-      <form on:submit|preventDefault={createPerson}>
+      <form class="add-form" on:submit|preventDefault={createPerson}>
         <LabelledInput label="Name" name="name" bind:value={name} />
-        <LabelledInput
-          label="Month"
-          name="month"
-          type="number"
-          bind:value={month}
-        />
-        <LabelledInput label="Day" name="day" type="number" bind:value={day} />
-        <LabelledInput
-          label="Year"
-          name="year"
-          type="number"
-          bind:value={year}
-        />
+        <div class="birthday-inputs">
+          <LabelledInput
+            label="Month"
+            name="month"
+            type="number"
+            bind:value={month}
+          />
+          <LabelledInput
+            label="Day"
+            name="day"
+            type="number"
+            bind:value={day}
+          />
+          <LabelledInput
+            label="Year"
+            name="year"
+            type="number"
+            bind:value={year}
+          />
+        </div>
         <button class="add-btn" disabled={!canAdd}>Add</button>
       </form>
     {:else}
@@ -218,6 +226,22 @@
 <style>
   .add-btn {
     color: black;
+  }
+
+  .birthday-inputs {
+    display: flex;
+    gap: 1rem;
+
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* .birthday-inputs > :global(.labelled-input) {
+    flex-grow: 1;
+  } */
+
+  .birthday-inputs > :global(.labelled-input > input) {
+    width: 2.5rem;
   }
 
   .buttons {

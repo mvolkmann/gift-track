@@ -23,10 +23,8 @@
     <input type="number" min="1" max="12" bind:value={month} />
     <span>/</span>
     <input type="number" min="1" max={lastDayInMonth} bind:value={day} />
-    {#if year}
-      <span>/</span>
-      <input type="number" min={minYear} max={maxYear} bind:value={year} />
-    {/if}
+    <span>/</span>
+    <input type="number" min={minYear} max={maxYear} bind:value={year} />
   {:else}
     {getDate()}
   {/if}
