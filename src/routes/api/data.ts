@@ -108,6 +108,55 @@ const tami = addPerson({
   year: 1961
 });
 
+addPerson({
+  name: 'Mark',
+  month: 4,
+  day: 16,
+  year: 1961
+});
+
+addPerson({
+  name: 'Amanda',
+  month: 7,
+  day: 22,
+  year: 1985
+});
+
+addPerson({
+  name: 'Jeremy',
+  month: 4,
+  day: 30,
+  year: 1987
+});
+
+addPerson({
+  name: 'RC',
+  month: 2,
+  day: 27,
+  year: 1981
+});
+
+addPerson({
+  name: 'Meghan',
+  month: 7,
+  day: 9,
+  year: 1988
+});
+
+addPerson({
+  name: 'Richard',
+  month: 7,
+  day: 28,
+  year: 1940
+});
+
+addPerson({
+  name: 'Pat',
+  month: 2,
+  day: 16,
+  year: 1947
+});
+
 const birthday = addOccasion({
   name: 'Birthday'
 });

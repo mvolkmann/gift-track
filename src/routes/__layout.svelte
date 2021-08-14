@@ -24,16 +24,20 @@
   <title>Gift Track - {pageName}</title>
 </svelte:head>
 
-<h1>Gift Track</h1>
-<nav>
-  {#each links as link}
-    <a href={link.href} class:active={link.href === $page.path}>{link.name}</a>
-  {/each}
-</nav>
-
-<slot />
-
-<Toast />
+<main>
+  <h1>Gift Track</h1>
+  <nav>
+    {#each links as link}
+      <a href={link.href} class:active={link.href === $page.path}>{link.name}</a
+      >
+    {/each}
+  </nav>
+  <hr />
+  <section class="slot">
+    <slot />
+  </section>
+  <Toast />
+</main>
 
 <style>
   a {
@@ -50,8 +54,23 @@
     margin-top: 0;
   }
 
+  main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  main > * {
+    width: 100%;
+  }
+
   nav {
     display: flex;
     gap: 1rem;
+  }
+
+  .slot {
+    flex-grow: 1;
+    overflow-y: scroll;
   }
 </style>
