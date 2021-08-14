@@ -10,9 +10,11 @@
   import {
     faPencilAlt,
     faSave,
+    faTimes,
     faTrash,
     faUserPlus
   } from '@fortawesome/free-solid-svg-icons';
+  import DateInput from '$lib/DateInput.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Person} from '$lib/types';
@@ -25,11 +27,21 @@
   let month = 1;
   let day = 1;
   let year: number | undefined;
+  let saved: Person;
 
   $: canAdd = Boolean(name && month && day);
 
   function addPerson() {
     adding = true;
+  }
+
+  function cancelEdit(person) {
+    person.name = saved.name;
+    person.month = saved.month;
+    person.day = saved.day;
+    person.year = saved.year;
+    person.editing = false;
+    people = people; // trigger reactivity
   }
 
   async function createPerson() {
@@ -45,7 +57,7 @@
       console.log('people.svelte x: res =', res);
       const json = await res.json();
       console.log('people.svelte x: json =', json);
-      editing = false;
+      person.editing = false;
     } catch (e) {
       console.error('people.svelte createPerson: e =', e);
     }
@@ -66,17 +78,11 @@
   }
 
   function editPerson(event: Event, person: Person) {
+    saved = {...person};
     const input = getInput(event);
     input.focus();
     person.editing = true;
     people = people; // trigger reactivity
-  }
-
-  function getBirthday(person: Person): string {
-    const {day, month, year} = person;
-    let bd = `${month}/${day}`;
-    if (year) bd += `/${year}`;
-    return bd;
   }
 
   function getInput(event: Event) {
@@ -86,10 +92,8 @@
   }
 
   async function updatePerson(event: Event, person: Person) {
-    const form = event.target as HTMLFormElement;
-    const input = form.querySelector('input');
-    person.name = input.value;
     const url = '/api/person/' + person.id;
+    delete person.editing;
 
     try {
       const res = await fetch(url, {
@@ -101,8 +105,9 @@
       //const text = await res.text();
       //console.log('people.svelte deletePerson: text =', text);
 
+      const form = event.target as HTMLFormElement;
+      const input = form.querySelector('input');
       input.blur();
-      person.editing = false;
       people = people; // trigger reactivity
     } catch (e) {
       console.error('people.svelte deletePerson: e =', e);
@@ -145,19 +150,29 @@
             class="name"
             type="text"
             readonly={!person.editing}
-            value={person.name}
+            bind:value={person.name}
           />
-          <div class="birthday">{getBirthday(person)}</div>
+          <!-- <div class="birthday">{getBirthday(person)}</div> -->
+          <DateInput
+            editing={person.editing}
+            bind:month={person.month}
+            bind:day={person.day}
+            bind:year={person.year}
+          />
           <div class="buttons">
             {#if person.editing}
               <IconButton icon={faSave} type="submit" />
+              <IconButton icon={faTimes} on:click={() => cancelEdit(person)} />
             {:else}
               <IconButton
                 icon={faPencilAlt}
                 on:click={e => editPerson(e, person)}
               />
+              <IconButton
+                icon={faTrash}
+                on:click={() => deletePerson(person)}
+              />
             {/if}
-            <IconButton icon={faTrash} on:click={() => deletePerson(person)} />
           </div>
         </form>
       {/each}
@@ -187,7 +202,7 @@
     border-radius: 0.25rem;
     padding: 0.5rem;
     flex-grow: 1;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     /* width: 4rem; */
   }
 

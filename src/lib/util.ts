@@ -1,5 +1,11 @@
 import type {Obj} from './types';
 
+export function getLastDayInMonth(year: number, month: number): number {
+  const date = new Date(year, month, 1);
+  date.setDate(0); // wraps back to previous month
+  return date.getDate();
+}
+
 // Sorts an array of objects in place on a given property
 // that must be a string or number.
 export function sortObjects(
