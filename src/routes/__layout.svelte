@@ -13,11 +13,6 @@
   ];
 
   $: pageName = links.find(link => link.href === $page.path).name;
-
-  function isActive(link: Link) {
-    console.log('__layout.svelte isActive: link =', link);
-    return link.href === $page.path;
-  }
 </script>
 
 <svelte:head>

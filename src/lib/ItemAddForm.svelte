@@ -1,7 +1,9 @@
 <script type="ts">
   import {createEventDispatcher} from 'svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
-  import type {Person} from '$lib/types';
+  import type {Item, ItemKind} from '$lib/types';
+
+  export let kind: ItemKind;
 
   const dispatch = createEventDispatcher();
 
@@ -10,28 +12,28 @@
   let day = 1;
   let year = new Date().getFullYear();
 
-  async function createPerson() {
-    const person: Person = {name, month, day};
+  async function createItem() {
+    const item: Item = {name, month, day};
     // year is not required.
-    if (year) person.year = year;
+    if (year) item.year = year;
 
     try {
-      const res = await fetch('/api/person', {
+      const res = await fetch('/api/' + kind, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(person)
+        body: JSON.stringify(item)
       });
-      const newPerson = await res.json();
-      dispatch('add', newPerson);
+      const newItem = await res.json();
+      dispatch('add', newItem);
     } catch (e) {
-      console.error('people.svelte createPerson: e =', e);
+      console.error('ItemAddForm.svelte createItem: e =', e);
     }
   }
 </script>
 
-<form class="add-form" on:submit|preventDefault={createPerson}>
+<form class="add-form" on:submit|preventDefault={createItem}>
   <LabelledInput label="Name" name="name" required bind:value={name} />
-  <div class="birthday-inputs">
+  <div class="date-inputs">
     <LabelledInput
       label="Month"
       name="month"
@@ -55,18 +57,6 @@
 </form>
 
 <style>
-  .birthday-inputs {
-    display: flex;
-    gap: 1rem;
-
-    box-sizing: border-box;
-    width: 100%;
-  }
-
-  .birthday-inputs > :global(.labelled-input > input) {
-    width: 2.5rem;
-  }
-
   button {
     color: black;
   }
@@ -74,5 +64,17 @@
   .buttons {
     display: flex;
     gap: 1rem;
+  }
+
+  .date-inputs {
+    display: flex;
+    gap: 1rem;
+
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .date-inputs > :global(.labelled-input > input) {
+    width: 2.5rem;
   }
 </style>

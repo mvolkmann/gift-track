@@ -1,20 +1,27 @@
-<script context="module">
-  export async function load({page, fetch, session, context}) {
-    const url = '/api/occasion';
-    const res = await fetch(url);
-    const occasions = await res.json();
-    return {props: {occasions}};
+<script context="module" lang="ts">
+  import type {Item} from '$lib/types';
+  import {ItemKind} from '$lib/types';
+
+  const kind = ItemKind.OCCASION;
+
+  type LoadType = {
+    props: {
+      items: Item[];
+    };
+  };
+
+  export async function load({fetch}): Promise<LoadType> {
+    const res = await fetch('/api/' + kind);
+    const items = await res.json();
+    items.sort((p1: Item, p2: Item) => p1.name.localeCompare(p2.name));
+    return {props: {items}};
   }
 </script>
 
-<script>
-  export let occasions;
+<script type="ts">
+  import Items from '$lib/Items.svelte';
+
+  export let items: Item[];
 </script>
 
-<h2>Occasions</h2>
-
-<ul>
-  {#each occasions as occasion}
-    <li>{occasion.name}</li>
-  {/each}
-</ul>
+<Items {items} {kind} title="Occasions" />

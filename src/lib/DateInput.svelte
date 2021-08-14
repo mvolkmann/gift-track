@@ -12,7 +12,7 @@
   $: lastDayInMonth = getLastDayInMonth(year, month);
 
   function getDate(): string {
-    let bd = `${month}/${day}`;
+    let bd = `${month || 1}/${day || 1}`;
     if (year) bd += `/${year}`;
     return bd;
   }

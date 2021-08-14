@@ -18,25 +18,22 @@ export type GiftResponse = {body?: Gift; status?: number};
 export type OccasionResponse = {body?: Occasion; status?: number};
 export type PersonResponse = {body?: Person; status?: number};
 
-export type Occasion = {
+export type Item = {
   id?: number;
   editing?: boolean;
   name: string;
-  month: number /* birth */;
-  day: number /* birth */;
-  year?: number /* birth */;
+  month: number;
+  day: number;
+  year?: number;
 };
 
+export enum ItemKind {
+  OCCASION = 'occasion',
+  PERSON = 'person'
+}
+
+export type Occasion = Item;
 export type OccasionMap = Record<number, Occasion>;
 
-// Note that this is the same as Occasion.
-export type Person = {
-  id?: number;
-  editing?: boolean;
-  name: string;
-  month: number /* birth */;
-  day: number /* birth */;
-  year?: number /* birth */;
-};
-
+export type Person = Item;
 export type PersonMap = Record<number, Person>;

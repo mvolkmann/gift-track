@@ -10,54 +10,55 @@
   import DateInput from '$lib/DateInput.svelte';
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
-  import type {Person} from '$lib/types';
+  import type {Item, ItemKind} from '$lib/types';
 
-  export let person: Person;
+  export let item: Item;
+  export let kind: ItemKind;
 
   const dispatch = createEventDispatcher();
 
   let dialog: HTMLDialogElement;
-  let savedPerson: Person;
-  let selectedPerson: Person;
+  let savedItem: Item;
+  let selectedItem: Item;
 
-  function cancelEdit(person: Person) {
+  function cancelEdit(item: Item) {
     // Restore previous values.
-    person.name = savedPerson.name;
-    person.month = savedPerson.month;
-    person.day = savedPerson.day;
-    person.year = savedPerson.year;
+    item.name = savedItem.name;
+    item.month = savedItem.month;
+    item.day = savedItem.day;
+    item.year = savedItem.year;
 
-    person.editing = false;
+    item.editing = false;
     dispatch('update');
   }
 
-  async function confirmDelete(event: Event, person: Person) {
-    selectedPerson = person;
+  async function confirmDelete(event: Event, item: Item) {
+    selectedItem = item;
     dialog.showModal();
   }
 
-  async function deletePerson() {
-    const url = '/api/person/' + selectedPerson.id;
+  async function deleteItem() {
+    const url = `/api/${kind}/${selectedItem.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      console.log('people.svelte deletePerson: res =', res);
-      dispatch('delete', selectedPerson.id);
-      selectedPerson = null;
+      console.log('ItemEditForm.svelte deleteItem: res =', res);
+      dispatch('delete', selectedItem.id);
+      selectedItem = null;
       dialog.close();
     } catch (e) {
-      console.error('people.svelte deletePerson: e =', e);
+      console.error('ItemEditForm.svelte deleteItem: e =', e);
     }
   }
 
-  function editPerson(event: Event, person: Person) {
+  function editItem(event: Event, item: Item) {
     // Copy current data so it can be restored if editing is cancelled.
-    savedPerson = {...person};
+    savedItem = {...item};
 
     // Move focus into the name input.
     const input = getFirstInput(event);
     input.focus();
 
-    person.editing = true;
+    item.editing = true;
     dispatch('update');
   }
 
@@ -67,9 +68,9 @@
     return container.querySelector('input');
   }
 
-  async function updatePerson(event: Event, person: Person) {
-    const url = '/api/person/' + person.id;
-    delete person.editing;
+  async function updateItem(event: Event, item: Item) {
+    const url = `/api/${kind}/${item.id}`;
+    delete item.editing;
 
     //TODO: Don't allow duplicate names.
 
@@ -77,11 +78,11 @@
       const res = await fetch(url, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(person)
+        body: JSON.stringify(item)
       });
-      console.log('people.svelte savePerson: res =', res);
+      console.log('ItemEditForm.svelte saveItem: res =', res);
       //const text = await res.text();
-      //console.log('people.svelte updatePerson: text =', text);
+      //console.log('people.svelte updateItem: text =', text);
 
       // Move focus out of the in the input that has it.
       const form = event.target as HTMLFormElement;
@@ -90,46 +91,45 @@
 
       dispatch('update');
     } catch (e) {
-      console.error('people.svelte updatePerson: e =', e);
+      console.error('ItemEditForm.svelte updateItem: e =', e);
     }
   }
 </script>
 
 <form
-  class:editing={person.editing}
-  on:submit|preventDefault={e => updatePerson(e, person)}
+  class:editing={item.editing}
+  on:submit|preventDefault={e => updateItem(e, item)}
 >
   <input
     class="name"
     type="text"
-    readonly={!person.editing}
-    bind:value={person.name}
+    readonly={!item.editing}
+    bind:value={item.name}
   />
   <DateInput
-    editing={person.editing}
-    bind:month={person.month}
-    bind:day={person.day}
-    bind:year={person.year}
+    editing={item.editing}
+    bind:month={item.month}
+    bind:day={item.day}
+    bind:year={item.year}
   />
   <div class="buttons">
-    {#if person.editing}
+    {#if item.editing}
       <IconButton icon={faSave} type="submit" />
-      <IconButton icon={faTimes} on:click={() => cancelEdit(person)} />
+      <IconButton icon={faTimes} on:click={() => cancelEdit(item)} />
     {:else}
-      <IconButton icon={faPencilAlt} on:click={e => editPerson(e, person)} />
-      <IconButton icon={faTrash} on:click={e => confirmDelete(e, person)} />
+      <IconButton icon={faPencilAlt} on:click={e => editItem(e, item)} />
+      <IconButton icon={faTrash} on:click={e => confirmDelete(e, item)} />
     {/if}
   </div>
 </form>
 
 <Dialog bind:dialog title="Confirm Delete">
   <div class="question">
-    Are you sure you want to delete {selectedPerson ? selectedPerson.name : ''}?
-    This will also delete all of {selectedPerson ? selectedPerson.name : ''}'s
-    gifts.
+    Are you sure you want to delete {selectedItem ? selectedItem.name : ''}?
+    This will also delete all of the associated gifts.
   </div>
   <div class="buttons">
-    <button on:click={deletePerson}>Yes</button>
+    <button on:click={deleteItem}>Yes</button>
     <button on:click={() => dialog.close()}>No</button>
   </div>
 </Dialog>

@@ -7,7 +7,7 @@ Here are the steps I took to create this project:
 - `npm init svelte@next gift-track`
 
   Note that "@next" will change when SvelteKit is out of beta.
-  This asks several questions.  I selected "Skeleton project",
+  This asks several questions. I selected "Skeleton project",
   TypeScript Yes, ESLint Yes, and Prettier Yes.
 
 - `cd gift-track`
