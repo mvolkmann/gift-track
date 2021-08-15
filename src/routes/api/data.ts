@@ -169,7 +169,7 @@ const christmas = addOccasion({
 addGift({
   description: 'shop at REI',
   name: 'hiking boots',
-  occasionId: birthday.id,
+  occasionId: christmas.id,
   personId: tami.id,
   price: 120,
   url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
@@ -188,7 +188,7 @@ addGift({
 addGift({
   description: 'Get the latest when it comes out.',
   name: 'iPhone',
-  occasionId: christmas.id,
+  occasionId: birthday.id,
   personId: tami.id,
   price: 1000,
   url: 'https://www.apple.com/iphone/'
