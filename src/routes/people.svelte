@@ -5,8 +5,8 @@
 
   const kind = ItemKind.PERSON;
 
-  export const load = (arg: LoadInput): Promise<LoadOutput> =>
-    loadKind(kind, arg);
+  export const load = (loadInput: LoadInput): Promise<LoadOutput> =>
+    loadKind(kind, loadInput);
 </script>
 
 <script type="ts">

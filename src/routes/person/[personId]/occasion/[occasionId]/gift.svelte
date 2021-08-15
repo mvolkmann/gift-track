@@ -27,10 +27,10 @@
   export let person: Person;
 </script>
 
-<h2>{occasion.name} Gifts for {person.name}</h2>
+<h2>{person.name}'s {occasion.name} Gifts</h2>
 
-<ul>
-  {#each gifts as gift}
-    <li>{gift.name}</li>
-  {/each}
-</ul>
+{#each gifts as gift}
+  <div>{gift.name}</div>
+{:else}
+  <p>No gifts found.</p>
+{/each}

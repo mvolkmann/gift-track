@@ -80,7 +80,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      console.log('ItemEditForm.svelte saveItem: res =', res);
+      console.log('ItemEditForm.svelte updateItem: res =', res);
       //const text = await res.text();
       //console.log('people.svelte updateItem: text =', text);
 

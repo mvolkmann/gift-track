@@ -37,17 +37,10 @@
     <LabelledInput
       label="Month"
       name="month"
-      required
       type="number"
       bind:value={month}
     />
-    <LabelledInput
-      label="Day"
-      name="day"
-      required
-      type="number"
-      bind:value={day}
-    />
+    <LabelledInput label="Day" name="day" type="number" bind:value={day} />
     <LabelledInput label="Year" name="year" type="number" bind:value={year} />
   </div>
   <div class="buttons">

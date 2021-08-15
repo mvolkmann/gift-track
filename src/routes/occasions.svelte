@@ -1,10 +1,12 @@
 <script context="module" lang="ts">
+  import type {LoadInput, LoadOutput} from '@sveltejs/kit/types';
   import {ItemKind} from '$lib/types';
   import {loadKind} from './loader';
 
   const kind = ItemKind.OCCASION;
 
-  export const load = arg => loadKind(kind, arg);
+  export const load = (loadInput: LoadInput): Promise<LoadOutput> =>
+    loadKind(kind, loadInput);
 </script>
 
 <script type="ts">

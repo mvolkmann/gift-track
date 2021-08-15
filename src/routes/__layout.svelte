@@ -12,7 +12,8 @@
     {href: '/gifts', name: 'Gifts'}
   ];
 
-  $: pageName = links.find(link => link.href === $page.path).name;
+  $: link = links.find(link => link.href === $page.path);
+  $: pageName = link ? link.name : 'not found';
 </script>
 
 <svelte:head>

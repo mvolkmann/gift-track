@@ -1,5 +1,3 @@
-export type Obj = Record<string, unknown>;
-
 export type Gift = {
   id?: number;
   description?: string /* ex. color and size can go here */;
@@ -22,8 +20,8 @@ export type Item = {
   id?: number;
   editing?: boolean;
   name: string;
-  month: number;
-  day: number;
+  month?: number;
+  day?: number;
   year?: number;
 };
 
@@ -31,6 +29,13 @@ export enum ItemKind {
   OCCASION = 'occasion',
   PERSON = 'person'
 }
+
+/*TODO: Is this better?
+export type Obj = {
+  [key: string]: unknown;
+};
+*/
+export type Obj = Record<string, unknown>;
 
 export type Occasion = Item;
 export type OccasionMap = Record<number, Occasion>;
