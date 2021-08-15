@@ -1,13 +1,17 @@
 <script lang="ts">
+  import {faPlus} from '@fortawesome/free-solid-svg-icons';
+  import GiftForm from '$lib/GiftForm.svelte';
+  import IconButton from '$lib/IconButton.svelte';
   import LabelledSelect from '$lib/LabelledSelect.svelte';
   import {occasionStore, personStore, toastStore} from '$lib/stores';
   import type {Gift, Occasion, Person} from '$lib/types';
   import {sortObjects} from '$lib/util';
-  import Occasions from './occasions.svelte';
 
   $: occasions = sortObjects(Object.values($occasionStore), 'name');
 
   $: people = sortObjects(Object.values($personStore), 'name');
+
+  let adding = false;
 
   let gifts: Gift[] = [];
   $: getGifts(selectedPerson, selectedOccasion);
@@ -43,25 +47,33 @@
 
 <section class="people">
   <form on:submit|preventDefault>
-    <LabelledSelect
-      label="Person"
-      name="person-select"
-      options={people}
-      selectedOption={selectedPerson}
-      textProperty="name"
-      valueProperty="id"
-      on:change={selectPerson}
-    />
-
-    <LabelledSelect
-      label="Occasion"
-      name="occasion-select"
-      options={occasions}
-      selectedOption={selectedOccasion}
-      textProperty="name"
-      valueProperty="id"
-      on:change={selectOccasion}
-    />
+    <div>
+      <LabelledSelect
+        label="Person"
+        name="person-select"
+        options={people}
+        selectedOption={selectedPerson}
+        textProperty="name"
+        valueProperty="id"
+        on:change={selectPerson}
+      />
+      <LabelledSelect
+        label="Occasion"
+        name="occasion-select"
+        options={occasions}
+        selectedOption={selectedOccasion}
+        textProperty="name"
+        valueProperty="id"
+        on:change={selectOccasion}
+      />
+      {#if selectedPerson && selectedOccasion}
+        <IconButton
+          color="white"
+          icon={faPlus}
+          on:click={() => (adding = true)}
+        />
+      {/if}
+    </div>
 
     <!--TODO: After a person is selected, show all their gifts.
          If an occasion is also selected,
@@ -72,7 +84,7 @@
     <!-- TODO: Allow adding a gift when both are selected. -->
 
     {#each gifts as gift}
-      <div>{gift.name}</div>
+      <GiftForm {gift} />
     {:else}
       <div>No gifts found.</div>
     {/each}
@@ -86,5 +98,10 @@
 <style>
   button {
     margin-top: 1rem;
+  }
+
+  form > div {
+    display: flex;
+    gap: 1rem;
   }
 </style>

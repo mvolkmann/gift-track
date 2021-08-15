@@ -1,6 +1,7 @@
 export type Gift = {
   id?: number;
   description?: string /* ex. color and size can go here */;
+  editing?: boolean;
   location?: string /* Where in the house did you put it? */;
   name: string;
   occasionId: number;

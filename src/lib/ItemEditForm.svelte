@@ -82,7 +82,7 @@
       });
       console.log('ItemEditForm.svelte updateItem: res =', res);
       //const text = await res.text();
-      //console.log('people.svelte updateItem: text =', text);
+      //console.log('ItemEditForm.svelte updateItem: text =', text);
 
       // Move focus out of the in the input that has it.
       const form = event.target as HTMLFormElement;
