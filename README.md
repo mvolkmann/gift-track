@@ -31,9 +31,10 @@ enter `npm run dev -- --open`.
 
 Navigate to the About, People, Occasions, and Gifts pages
 by clicking the nav links near the top.
-While not yet connected via the nav,
-you can change the URL to "/person/{personId}/occasion/{occasionId}/gift"
-to navigate to another page that displays gifts.
+On the Gift page, after gifts are displayed click the "Go to Report" button.
+Note that this changes the URL to
+"/person/{personId}/occasion/{occasionId}/gift"
+and navigate to that page.
 
 Before creating a production version of your app,
 install an [adapter](https://kit.svelte.dev/docs#adapters)

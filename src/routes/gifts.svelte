@@ -27,6 +27,11 @@
     }
   }
 
+  function goToReport() {
+    const url = `/person/${selectedPerson.id}/occasion/${selectedOccasion.id}/gift`;
+    location.href = url;
+  }
+
   function selectOccasion(event: CustomEvent) {
     selectedOccasion = event.detail;
   }
@@ -58,18 +63,28 @@
       on:change={selectOccasion}
     />
 
-    <!-- After a person is selected, show all their gifts.
+    <!--TODO: After a person is selected, show all their gifts.
          If an occasion is also selected,
-         only show those gifts and the total.
-         Allow deleting a gift with confirmation.
-         Allow adding a gift when both are selected. -->
+         only show those gifts and the total. -->
+
+    <!-- TODO: Allow deleting a gift with confirmation. -->
+
+    <!-- TODO: Allow adding a gift when both are selected. -->
+
     {#each gifts as gift}
       <div>{gift.name}</div>
     {:else}
-      <p>No gifts found.</p>
+      <div>No gifts found.</div>
     {/each}
+
+    <button disabled={gifts.length === 0} on:click={goToReport}>
+      Go to Report
+    </button>
   </form>
 </section>
 
 <style>
+  button {
+    margin-top: 1rem;
+  }
 </style>
