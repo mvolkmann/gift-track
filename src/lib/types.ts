@@ -30,12 +30,12 @@ export enum ItemKind {
   PERSON = 'person'
 }
 
+export type Obj = Record<string, unknown>;
 /*TODO: Is this better?
 export type Obj = {
   [key: string]: unknown;
 };
 */
-export type Obj = Record<string, unknown>;
 
 export type Occasion = Item;
 export type OccasionMap = Record<number, Occasion>;
