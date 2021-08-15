@@ -1,6 +1,8 @@
 <script lang="ts">
   import {faPlus} from '@fortawesome/free-solid-svg-icons';
-  import GiftForm from '$lib/GiftForm.svelte';
+  import {onMount} from 'svelte';
+
+  //import GiftForm from '$lib/GiftForm.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledSelect from '$lib/LabelledSelect.svelte';
   import {occasionStore, personStore, toastStore} from '$lib/stores';
@@ -8,7 +10,6 @@
   import {sortObjects} from '$lib/util';
 
   $: occasions = sortObjects(Object.values($occasionStore), 'name');
-
   $: people = sortObjects(Object.values($personStore), 'name');
 
   let adding = false;
@@ -18,6 +19,16 @@
 
   let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
+
+  onMount(() => {
+    // Restore the last selected person.
+    let id = Number(sessionStorage.getItem('person-id'));
+    if (id) selectedPerson = people.find(p => p.id === id) as Person;
+
+    // Restore the last selected occasion.
+    id = Number(sessionStorage.getItem('person-id'));
+    if (id) selectedOccasion = occasions.find(p => p.id === id) as Occasion;
+  });
 
   async function getGifts(person: Person, occasion: Occasion) {
     if (!person || !occasion) return [];
@@ -38,12 +49,18 @@
 
   function selectOccasion(event: CustomEvent) {
     selectedOccasion = event.detail;
+    sessionStorage.setItem('occasion-id', String(selectedPerson.id));
   }
 
   function selectPerson(event: CustomEvent) {
     selectedPerson = event.detail;
+    sessionStorage.setItem('person-id', String(selectedPerson.id));
   }
 </script>
+
+<!-- TODO: Implementing adding a new gift. Use GiftForm?
+     But don't duplicate all the code between GiftForm
+     and src/routes/gift/[id].svelte.  -->
 
 <section class="people">
   <form on:submit|preventDefault>
@@ -66,38 +83,39 @@
         valueProperty="id"
         on:change={selectOccasion}
       />
-      {#if selectedPerson && selectedOccasion}
-        <IconButton
-          color="white"
-          icon={faPlus}
-          on:click={() => (adding = true)}
-        />
-      {/if}
     </div>
 
     <!--TODO: After a person is selected, show all their gifts.
          If an occasion is also selected,
          only show those gifts and the total. -->
 
-    <!-- TODO: Allow deleting a gift with confirmation. -->
-
     <!-- TODO: Allow adding a gift when both are selected. -->
 
-    {#each gifts as gift}
-      <GiftForm {gift} />
-    {:else}
-      <div>No gifts found.</div>
-    {/each}
+    {#if selectedPerson && selectedOccasion}
+      {#each gifts as gift}
+        <a href={`/gift/${gift.id}`}>{gift.name}</a>
+      {:else}
+        <p>No gifts found.</p>
+      {/each}
+      <div>
+        <IconButton
+          color="white"
+          icon={faPlus}
+          on:click={() => (adding = true)}
+        />
+      </div>
 
-    <button disabled={gifts.length === 0} on:click={goToReport}>
-      Go to Report
-    </button>
+      <button disabled={gifts.length === 0} on:click={goToReport}>
+        Go to Report
+      </button>
+    {/if}
   </form>
 </section>
 
 <style>
-  button {
-    margin-top: 1rem;
+  a {
+    display: block;
+    margin-bottom: 1rem;
   }
 
   form > div {

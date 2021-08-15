@@ -84,7 +84,7 @@
       //const text = await res.text();
       //console.log('ItemEditForm.svelte updateItem: text =', text);
 
-      // Move focus out of the in the input that has it.
+      // Move focus out of the input that has it.
       const form = event.target as HTMLFormElement;
       const input = form.querySelector('input:focus') as HTMLInputElement;
       input?.blur();
@@ -139,8 +139,6 @@
     display: flex;
     justify-content: center;
     column-gap: 0.5rem;
-
-    margin-left: 1rem;
   }
 
   .buttons button {
@@ -158,6 +156,10 @@
     margin-bottom: 1rem;
     padding: 0.5rem;
     width: 100%;
+  }
+
+  form > .buttons {
+    margin-left: 1rem;
   }
 
   input {

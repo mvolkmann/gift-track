@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["introend", "readonly", "sveltejs", "transitionend"]
+  "cSpell.words": [
+    "introend",
+    "noopener",
+    "readonly",
+    "sveltejs",
+    "transitionend"
+  ]
 }

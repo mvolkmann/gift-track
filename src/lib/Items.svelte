@@ -69,10 +69,6 @@
     height: 100%;
   }
 
-  .items :global(svg) {
-    font-size: 1.5rem;
-  }
-
   .scroll {
     flex-grow: 1;
     overflow-y: scroll;
