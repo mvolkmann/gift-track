@@ -21,7 +21,12 @@
 </script>
 
 <div class="labelled-select">
-  <label for={name}>{label}</label>
+  <label for={name}>
+    {label}
+    {#if required}
+      <span class="required">*</span>
+    {/if}
+  </label>
   <select
     id={name}
     {required}
@@ -52,5 +57,12 @@
 
   .labelled-select {
     margin-bottom: 1rem;
+  }
+
+  .required {
+    color: white;
+    font-size: 1.7rem;
+    position: relative;
+    top: 0.6rem;
   }
 </style>

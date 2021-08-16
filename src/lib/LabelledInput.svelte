@@ -20,7 +20,12 @@
 
 {#if !readonly || value}
   <div class="labelled-input">
-    <label for={name}>{label}</label>
+    <label for={name}>
+      {label}
+      {#if required && !readonly}
+        <span class="required">*</span>
+      {/if}
+    </label>
     {#if type === 'date'}
       <input type="date" {readonly} {required} bind:value />
     {:else if type === 'number'}
@@ -62,5 +67,12 @@
 
   .labelled-input {
     margin-bottom: 1rem;
+  }
+
+  .required {
+    color: white;
+    font-size: 1.7rem;
+    position: relative;
+    top: 0.6rem;
   }
 </style>

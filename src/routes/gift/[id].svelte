@@ -115,6 +115,7 @@
       label="Name"
       name="name"
       readonly={!editing}
+      required
       bind:value={gift.name}
     />
     <LabelledInput
