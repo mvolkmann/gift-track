@@ -18,6 +18,7 @@
     faTimes,
     faTrash
   } from '@fortawesome/free-solid-svg-icons';
+  import {goto} from '$app/navigation';
 
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
@@ -29,6 +30,12 @@
   let editing = false;
   let savedGift: Gift;
   let selectedGift: Gift;
+
+  function back() {
+    //TODO: Which of these approaches is better?
+    //history.back();
+    goto(document.referrer || '/');
+  }
 
   function cancelEdit() {
     // Restore previous values.
@@ -49,7 +56,7 @@
       console.log('gift/[id].svelte deleteGift: res =', res);
       selectedGift = null;
       dialog.close();
-      location.href = '/gifts';
+      goto('/gifts');
     } catch (e) {
       console.error('gift/[id].svelte deleteGift: e =', e);
     }
@@ -98,11 +105,7 @@
         <IconButton icon={faSave} type="submit" />
         <IconButton icon={faTimes} on:click={cancelEdit} />
       {:else}
-        <IconButton
-          icon={faAngleLeft}
-          size="2rem"
-          on:click={() => history.back()}
-        />
+        <IconButton icon={faAngleLeft} size="2rem" on:click={back} />
         <IconButton icon={faPencilAlt} on:click={editGift} />
         <IconButton icon={faTrash} on:click={confirmDelete} />
       {/if}

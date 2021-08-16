@@ -1,6 +1,7 @@
 <script lang="ts">
   import {faPlus} from '@fortawesome/free-solid-svg-icons';
   import {onMount} from 'svelte';
+  import {goto} from '$app/navigation';
 
   //import GiftForm from '$lib/GiftForm.svelte';
   import IconButton from '$lib/IconButton.svelte';
@@ -44,7 +45,7 @@
 
   function goToReport() {
     const url = `/person/${selectedPerson.id}/occasion/${selectedOccasion.id}/gift`;
-    location.href = url;
+    goto(url);
   }
 
   function selectOccasion(event: CustomEvent) {
