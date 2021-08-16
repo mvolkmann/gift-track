@@ -5,6 +5,9 @@
   export async function load({fetch, page}: LoadInput): Promise<LoadOutput> {
     const {id} = page.params;
     const res = await fetch('/api/gift/' + id);
+    if (res.status === 404) {
+      throw new Error(`No gift with id ${id} was found.`);
+    }
     const gift = await res.json();
     return {props: {gift}};
   }

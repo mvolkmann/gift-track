@@ -34,13 +34,17 @@
   async function getGifts(person: Person, occasion: Occasion) {
     if (!person || !occasion) return [];
 
-    try {
-      const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
-      const res = await fetch(url);
-      gifts = await res.json();
-    } catch (e) {
-      console.error('gifts.svelte getGifts: e =', e);
-    }
+    //try {
+    const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
+    const res = await fetch(url);
+    console.log('gifts.svelte getGifts: res.status =', res.status);
+    if (res.status !== 200) throw new Error(await res.text());
+    //TODO: How can you make this render the error page?
+    //TODO: Is seems that only happens when an Error is thrown in a load function.
+    gifts = await res.json();
+    // } catch (e) {
+    //   console.error('gifts.svelte getGifts: e =', e);
+    // }
   }
 
   function goToReport() {
