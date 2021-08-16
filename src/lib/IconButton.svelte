@@ -5,6 +5,7 @@
   export let icon;
   export let size = '1.5rem';
   export let text = '';
+  export let title = '';
   export let type = 'button';
 
   function setup(button: HTMLButtonElement) {
@@ -14,7 +15,7 @@
   }
 </script>
 
-<button class="icon-button" {type} on:click use:setup>
+<button class="icon-button" {title} {type} on:click use:setup>
   <Icon {icon} />
   {text}
 </button>

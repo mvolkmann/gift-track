@@ -114,11 +114,23 @@
   />
   <div class="buttons">
     {#if item.editing}
-      <IconButton icon={faSave} type="submit" />
-      <IconButton icon={faTimes} on:click={() => cancelEdit(item)} />
+      <IconButton icon={faSave} title="Save" type="submit" />
+      <IconButton
+        icon={faTimes}
+        title="Cancel"
+        on:click={() => cancelEdit(item)}
+      />
     {:else}
-      <IconButton icon={faPencilAlt} on:click={e => editItem(e, item)} />
-      <IconButton icon={faTrash} on:click={e => confirmDelete(e, item)} />
+      <IconButton
+        icon={faPencilAlt}
+        title="Edit"
+        on:click={e => editItem(e, item)}
+      />
+      <IconButton
+        icon={faTrash}
+        title="Delete"
+        on:click={e => confirmDelete(e, item)}
+      />
     {/if}
   </div>
 </form>

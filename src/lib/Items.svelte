@@ -31,7 +31,12 @@
 <section class="items">
   <h2>
     {title}
-    <IconButton color="white" icon={faPlus} on:click={() => (adding = true)} />
+    <IconButton
+      color="white"
+      icon={faPlus}
+      title="Add {kind}"
+      on:click={() => (adding = true)}
+    />
   </h2>
   <section class="scroll">
     {#if adding}

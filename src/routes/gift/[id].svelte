@@ -102,12 +102,17 @@
   <form class:editing on:submit|preventDefault={updateGift}>
     <div class="buttons">
       {#if editing}
-        <IconButton icon={faSave} type="submit" />
-        <IconButton icon={faTimes} on:click={cancelEdit} />
+        <IconButton icon={faSave} title="Save" type="submit" />
+        <IconButton icon={faTimes} title="Cancel" on:click={cancelEdit} />
       {:else}
-        <IconButton icon={faAngleLeft} size="2rem" on:click={back} />
-        <IconButton icon={faPencilAlt} on:click={editGift} />
-        <IconButton icon={faTrash} on:click={confirmDelete} />
+        <IconButton
+          icon={faAngleLeft}
+          size="2rem"
+          title="Back"
+          on:click={back}
+        />
+        <IconButton icon={faPencilAlt} title="Edit" on:click={editGift} />
+        <IconButton icon={faTrash} title="Delete" on:click={confirmDelete} />
       {/if}
     </div>
 

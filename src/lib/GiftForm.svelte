@@ -100,11 +100,23 @@ Maybe this will be needed to add a new gift. -->
 <div class="gift">
   <div class="buttons">
     {#if editing}
-      <IconButton icon={faSave} type="submit" />
-      <IconButton icon={faTimes} on:click={() => cancelEdit(gift)} />
+      <IconButton icon={faSave} title="Save" type="submit" />
+      <IconButton
+        icon={faTimes}
+        title="Cancel"
+        on:click={() => cancelEdit(gift)}
+      />
     {:else}
-      <IconButton icon={faPencilAlt} on:click={e => editGift(e, gift)} />
-      <IconButton icon={faTrash} on:click={e => confirmDelete(e, gift)} />
+      <IconButton
+        icon={faPencilAlt}
+        title="Edit"
+        on:click={e => editGift(e, gift)}
+      />
+      <IconButton
+        icon={faTrash}
+        title="Delete"
+        on:click={e => confirmDelete(e, gift)}
+      />
     {/if}
   </div>
   <form class:editing on:submit|preventDefault={e => updateGift(e, gift)}>

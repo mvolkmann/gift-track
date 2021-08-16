@@ -102,6 +102,7 @@
         <IconButton
           color="white"
           icon={faPlus}
+          title="Add Gift"
           on:click={() => (adding = true)}
         />
       </div>
@@ -117,6 +118,10 @@
   a {
     display: block;
     margin-bottom: 1rem;
+  }
+
+  button {
+    margin-top: 1rem;
   }
 
   form > div {
