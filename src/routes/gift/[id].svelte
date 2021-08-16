@@ -101,7 +101,7 @@
         <IconButton
           icon={faAngleLeft}
           size="2rem"
-          on:click={() => window.history.back()}
+          on:click={() => history.back()}
         />
         <IconButton icon={faPencilAlt} on:click={editGift} />
         <IconButton icon={faTrash} on:click={confirmDelete} />
