@@ -36,8 +36,8 @@
 
   function back() {
     //TODO: Which of these approaches is better?
-    //history.back();
-    goto(document.referrer || '/');
+    history.back();
+    //goto(document.referrer || '/');
   }
 
   function cancelEdit() {
@@ -168,8 +168,8 @@
 <style>
   .buttons {
     display: flex;
-    justify-content: center;
     column-gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .buttons button {

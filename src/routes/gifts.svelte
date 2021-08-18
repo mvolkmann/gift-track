@@ -97,19 +97,23 @@
     <!-- TODO: Allow adding a gift when both are selected. -->
 
     {#if selectedPerson && selectedOccasion}
-      {#each gifts as gift}
-        <a href={`/gift/${gift.id}`}>{gift.name}</a>
+      {#if adding}
+        <p>display form for adding a gift</p>
       {:else}
-        <p>No gifts found.</p>
-      {/each}
-      <div>
-        <IconButton
-          color="white"
-          icon={faPlus}
-          title="Add Gift"
-          on:click={() => (adding = true)}
-        />
-      </div>
+        <div>
+          <IconButton
+            color="white"
+            icon={faPlus}
+            title="Add Gift"
+            on:click={() => (adding = true)}
+          />
+        </div>
+        {#each gifts as gift}
+          <a href={`/gift/${gift.id}`}>{gift.name}</a>
+        {:else}
+          <p>No gifts found.</p>
+        {/each}
+      {/if}
 
       <button disabled={gifts.length === 0} on:click={goToReport}>
         Go to Report
@@ -121,7 +125,7 @@
 <style>
   a {
     display: block;
-    margin-bottom: 1rem;
+    margin-top: 1rem;
   }
 
   button {

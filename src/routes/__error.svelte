@@ -15,3 +15,10 @@
 <h2>{message}</h2>
 
 <img alt="bad gift" src="/images/bad-gift.jpg" />
+
+<style>
+  img {
+    object-fit: contain;
+    width: 100%;
+  }
+</style>

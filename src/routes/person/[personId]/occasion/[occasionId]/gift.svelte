@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
   import type {LoadInput, LoadOutput} from '@sveltejs/kit/types';
+  import GiftDetail from '$lib/GiftDetail.svelte';
 
   export async function load({page, fetch}: LoadInput): Promise<LoadOutput> {
     const personId = Number(page.params.personId);
@@ -25,12 +26,37 @@
   export let gifts: Gift[];
   export let occasion: Occasion;
   export let person: Person;
+
+  let total = 0;
+  $: total = gifts.reduce((acc, gift) => acc + gift.price, 0);
+
+  function back() {
+    //TODO: Which of these approaches is better?
+    history.back();
+    //goto(document.referrer || '/');
+  }
 </script>
 
 <h2>{person.name}'s {occasion.name} Gifts</h2>
 
 {#each gifts as gift}
-  <div>{gift.name}</div>
+  <GiftDetail {gift} />
 {:else}
   <p>No gifts found.</p>
 {/each}
+
+<div class="total">
+  Total: ${total}
+</div>
+
+<button on:click={back}>Back</button>
+
+<style>
+  button {
+    color: black;
+  }
+
+  .total {
+    margin-bottom: 1rem;
+  }
+</style>
