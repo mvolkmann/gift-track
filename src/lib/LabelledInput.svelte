@@ -14,8 +14,8 @@
   };
 
   const props: PropsType = {};
-  if (max !== -1) props.max = max;
-  if (min !== -1) props.min = min;
+  $: if (max !== -1) props.max = max;
+  $: if (min !== -1) props.min = min;
 </script>
 
 <div class="labelled-input">

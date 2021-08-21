@@ -98,14 +98,14 @@
 
   header :global(.close-btn) {
     background-color: transparent;
-    color: var(--label-color);
+    color: var(--primary-color);
     font-size: 1.5rem;
     margin-left: 1rem;
     padding: 0;
   }
 
   .title {
-    color: var(--label-color);
+    color: var(--primary-color);
     flex-grow: 1;
     font-size: 1.5rem;
     font-weight: bold;

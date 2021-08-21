@@ -25,6 +25,10 @@
 {/if}
 
 <style>
+  a {
+    color: var(--primary-color);
+  }
+
   .gift {
     background-color: var(--secondary-color);
     border: none;
@@ -35,6 +39,8 @@
   }
 
   .name {
+    color: var(--primary-color);
+    font-size: 1.3rem;
     font-weight: bold;
   }
 </style>

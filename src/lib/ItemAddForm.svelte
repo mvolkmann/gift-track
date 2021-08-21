@@ -13,6 +13,7 @@
   let day = 1;
   let year = new Date().getFullYear();
 
+  let lastDayInMonth: number;
   $: lastDayInMonth = getLastDayInMonth(year, month);
 
   async function createItem() {
@@ -69,10 +70,6 @@
 </form>
 
 <style>
-  button {
-    color: black;
-  }
-
   .buttons {
     display: flex;
     gap: 1rem;
@@ -88,7 +85,7 @@
 
   .date-inputs :global(input[name='month']),
   .date-inputs :global(input[name='day']) {
-    width: 2.5rem;
+    width: 3rem;
   }
 
   .date-inputs :global(input[name='year']) {

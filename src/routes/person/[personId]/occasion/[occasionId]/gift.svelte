@@ -45,15 +45,15 @@
   <p>No gifts found.</p>
 {/each}
 
-<div class="total">
+<p class="total">
   Total: ${total}
-</div>
+</p>
 
 <button on:click={back}>Back</button>
 
 <style>
-  button {
-    color: black;
+  h2 {
+    margin-top: 0;
   }
 
   .total {

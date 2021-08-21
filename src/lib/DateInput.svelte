@@ -34,8 +34,4 @@
   .date-input {
     display: flex;
   }
-
-  .date-input > input:nth(1) {
-    outline: 1px solid red;
-  }
 </style>

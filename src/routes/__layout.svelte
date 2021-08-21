@@ -28,7 +28,6 @@
       >
     {/each}
   </nav>
-  <hr />
   <section class="slot">
     <slot />
   </section>
@@ -67,6 +66,7 @@
 
   .slot {
     flex-grow: 1;
+    margin-top: 1rem;
     overflow-y: scroll;
   }
 </style>

@@ -3,7 +3,7 @@
 
   import Icon from 'fa-svelte';
 
-  export let color = 'black';
+  export let color = 'var(--label-color)';
   export let icon: IconDefinition;
   export let size = '1.5rem';
   export let text = '';
@@ -28,9 +28,5 @@
 
     background-color: transparent;
     padding: 0;
-  }
-
-  .icon-button :global(svg) {
-    fill: currentColor;
   }
 </style>
