@@ -18,31 +18,29 @@
   if (min !== -1) props.min = min;
 </script>
 
-{#if !readonly || value}
-  <div class="labelled-input">
-    <label for={name}>
-      {label}
-      {#if required && !readonly}
-        <span class="required">*</span>
-      {/if}
-    </label>
-    {#if type === 'date'}
-      <input type="date" {readonly} {required} bind:value />
-    {:else if type === 'number'}
-      <input type="number" {readonly} {required} bind:value {...props} />
-    {:else if type === 'url'}
-      {#if readonly}
-        <a alt={name} href={String(value)} rel="noopener" target="_blank">
-          {value}
-        </a>
-      {:else}
-        <input type="url" {required} bind:value {...props} />
-      {/if}
-    {:else}
-      <input type="text" {readonly} {required} bind:value />
+<div class="labelled-input">
+  <label for={name}>
+    {label}
+    {#if required && !readonly}
+      <span class="required">*</span>
     {/if}
-  </div>
-{/if}
+  </label>
+  {#if type === 'date'}
+    <input {name} type="date" {readonly} {required} bind:value />
+  {:else if type === 'number'}
+    <input {name} type="number" {readonly} {required} bind:value {...props} />
+  {:else if type === 'url'}
+    {#if readonly}
+      <a alt={name} href={String(value)} rel="noopener" target="_blank">
+        {value}
+      </a>
+    {:else}
+      <input {name} type="url" {required} bind:value {...props} />
+    {/if}
+  {:else}
+    <input {name} type="text" {readonly} {required} bind:value />
+  {/if}
+</div>
 
 <style>
   input {
@@ -63,15 +61,13 @@
     display: block;
     color: var(--secondary-color);
     margin-bottom: 0.25rem;
-  }
-
-  .labelled-input {
-    margin-bottom: 1rem;
+    position: relative;
   }
 
   .required {
     color: white;
     font-size: 1.7rem;
+    line-height: 0.5rem;
     position: relative;
     top: 0.6rem;
   }

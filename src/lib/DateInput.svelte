@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {getLastDayInMonth} from './util';
+  import {getLastDayInMonth} from '$lib/util';
 
   export let editing = false;
   export let month: number;
@@ -33,5 +33,9 @@
 <style>
   .date-input {
     display: flex;
+  }
+
+  .date-input > input:nth(1) {
+    outline: 1px solid red;
   }
 </style>

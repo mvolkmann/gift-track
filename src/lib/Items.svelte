@@ -1,10 +1,11 @@
-<script type="ts">
+<script lang="ts">
   import {faPlus} from '@fortawesome/free-solid-svg-icons';
 
   import IconButton from '$lib/IconButton.svelte';
   import ItemAddForm from '$lib/ItemAddForm.svelte';
   import ItemEditForm from '$lib/ItemEditForm.svelte';
   import type {Item, ItemKind} from '$lib/types';
+  import {sortObjects} from '$lib/util';
 
   export let items: Item[];
   export let kind: ItemKind;
@@ -12,10 +13,13 @@
 
   let adding = false;
 
+  $: sortedItems = sortObjects(items, 'name') as Item[];
+
   function addItem(event: CustomEvent) {
     const newItem = event.detail as Item;
     items.push(newItem);
     adding = false;
+    updatePeople();
   }
 
   function deleteItem(event: CustomEvent) {
@@ -44,7 +48,7 @@
     {:else}
       <!-- Using a key in this #each is required for
            proper updates after an item is deleted. -->
-      {#each items as item (item.id)}
+      {#each sortedItems as item (item.id)}
         <ItemEditForm
           {item}
           {kind}

@@ -1,7 +1,8 @@
-<script type="ts">
+<script lang="ts">
   import {createEventDispatcher} from 'svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Item, ItemKind} from '$lib/types';
+  import {getLastDayInMonth} from '$lib/util';
 
   export let kind: ItemKind;
 
@@ -11,6 +12,8 @@
   let month = 1;
   let day = 1;
   let year = new Date().getFullYear();
+
+  $: lastDayInMonth = getLastDayInMonth(year, month);
 
   async function createItem() {
     const item: Item = {name, month, day};
@@ -31,17 +34,33 @@
   }
 </script>
 
-<form class="add-form" on:submit|preventDefault={createItem}>
+<form on:submit|preventDefault={createItem}>
   <LabelledInput label="Name" name="name" required bind:value={name} />
   <div class="date-inputs">
     <LabelledInput
       label="Month"
+      max={12}
+      min={1}
       name="month"
       type="number"
       bind:value={month}
     />
-    <LabelledInput label="Day" name="day" type="number" bind:value={day} />
-    <LabelledInput label="Year" name="year" type="number" bind:value={year} />
+    <LabelledInput
+      label="Day"
+      max={lastDayInMonth}
+      min={1}
+      name="day"
+      type="number"
+      bind:value={day}
+    />
+    <LabelledInput
+      label="Year"
+      max={2100}
+      min={1920}
+      name="year"
+      type="number"
+      bind:value={year}
+    />
   </div>
   <div class="buttons">
     <button>Add</button>
@@ -67,7 +86,21 @@
     width: 100%;
   }
 
-  .date-inputs > :global(.labelled-input > input) {
+  .date-inputs :global(input[name='month']),
+  .date-inputs :global(input[name='day']) {
     width: 2.5rem;
+  }
+
+  .date-inputs :global(input[name='year']) {
+    width: 3.5rem;
+  }
+
+  form {
+    padding: 0 2px; /* so focus outline is not too close to edges */
+  }
+
+  form :global(.labelled-input),
+  form :global(.labelled-select) {
+    margin-bottom: 1rem;
   }
 </style>

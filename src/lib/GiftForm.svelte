@@ -1,19 +1,20 @@
-<!--TODO: Do you still need this component?
-Maybe this will be needed to add a new gift. -->
 <script lang="ts">
   import {
+    faAngleLeft,
     faPencilAlt,
     faSave,
     faTimes,
     faTrash
   } from '@fortawesome/free-solid-svg-icons';
   import {createEventDispatcher} from 'svelte';
+  import {goto} from '$app/navigation';
 
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Gift} from '$lib/types';
 
+  export let adding = false;
   export let gift: Gift;
 
   const dispatch = createEventDispatcher();
@@ -23,18 +24,23 @@ Maybe this will be needed to add a new gift. -->
   let savedGift: Gift;
   let selectedGift: Gift;
 
-  function cancelEdit(gift: Gift) {
-    // Restore previous values.
-    gift.description = savedGift.description;
-    gift.location = savedGift.location;
-    gift.name = savedGift.name;
-    gift.price = savedGift.price;
+  let readonly = false;
+  $: readonly = !adding && !editing;
 
-    editing = false;
-    dispatch('update');
+  function back() {
+    //TODO: Which of these approaches is better?
+    history.back();
+    //goto(document.referrer || '/');
   }
 
-  async function confirmDelete(event: Event, gift: Gift) {
+  function cancelEdit() {
+    // Restore previous values.
+    gift = savedGift;
+
+    editing = false;
+  }
+
+  async function confirmDelete() {
     selectedGift = gift;
     dialog.showModal();
   }
@@ -43,25 +49,24 @@ Maybe this will be needed to add a new gift. -->
     const url = `/api/gift/${selectedGift.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      console.log('Gift.svelte deleteGift: res =', res);
-      dispatch('delete', selectedGift.id);
+      console.log('gift/[id].svelte deleteGift: res =', res);
       selectedGift = null;
       dialog.close();
+      goto('/gifts');
+      dispatch('change');
     } catch (e) {
-      console.error('Gift.svelte deleteGift: e =', e);
+      console.error('gift/[id].svelte deleteGift: e =', e);
     }
   }
 
-  function editGift(event: Event, gift: Gift) {
+  async function editGift(event: Event) {
     // Copy current data so it can be restored if editing is cancelled.
     savedGift = {...gift};
 
-    // Move focus into the name input.
-    const input = getFirstInput(event);
-    input.focus();
-
     editing = true;
-    dispatch('update');
+
+    // Move focus into the name input.
+    getFirstInput(event).focus();
   }
 
   function getFirstInput(event: Event) {
@@ -70,89 +75,89 @@ Maybe this will be needed to add a new gift. -->
     return container.querySelector('input');
   }
 
-  async function updateGift(event: Event, gift: Gift) {
-    const url = `/api/gift/${gift.id}`;
+  async function saveGift() {
+    const url = `/api/gift${adding ? '' : '/' + gift.id}`;
+    const method = adding ? 'POST' : 'PUT';
 
     //TODO: Don't allow duplicate names.
 
     try {
       const res = await fetch(url, {
-        method: 'PUT',
+        method,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(gift)
       });
-      console.log('Gift.svelte updateItem: res =', res);
-      //const text = await res.text();
-      //console.log('Gift.svelte updateItem: text =', text);
 
-      // Move focus out of the input that has it.
-      const form = event.target as HTMLFormElement;
-      const input = form.querySelector('input:focus') as HTMLInputElement;
-      input?.blur();
-
-      dispatch('update');
+      if (editing) {
+        editing = false;
+        goto('/gifts');
+      } else {
+        adding = false;
+        dispatch('change');
+      }
     } catch (e) {
-      console.error('Gift.svelte updateItem: e =', e);
+      console.error('gift/[id].svelte updateItem: e =', e);
     }
   }
 </script>
 
 <div class="gift">
-  <div class="buttons">
-    {#if editing}
-      <IconButton icon={faSave} title="Save" type="submit" />
-      <IconButton
-        icon={faTimes}
-        title="Cancel"
-        on:click={() => cancelEdit(gift)}
-      />
-    {:else}
-      <IconButton
-        icon={faPencilAlt}
-        title="Edit"
-        on:click={e => editGift(e, gift)}
-      />
-      <IconButton
-        icon={faTrash}
-        title="Delete"
-        on:click={e => confirmDelete(e, gift)}
-      />
-    {/if}
-  </div>
-  <form class:editing on:submit|preventDefault={e => updateGift(e, gift)}>
-    <LabelledInput label="Name" name="name" bind:value={gift.name} />
+  <form class:editing on:submit|preventDefault={saveGift}>
+    <LabelledInput
+      label="Name"
+      name="name"
+      readonly={!adding && !editing}
+      required
+      bind:value={gift.name}
+    />
     <LabelledInput
       label="Description"
       name="description"
-      readonly={!editing}
+      {readonly}
       bind:value={gift.description}
     />
     <LabelledInput
       label="Location"
       name="location"
-      readonly={!editing}
+      {readonly}
       bind:value={gift.location}
     />
     <LabelledInput
       label="Price"
+      min={0}
       name="price"
-      readonly={!editing}
+      {readonly}
       type="number"
       bind:value={gift.price}
     />
     <LabelledInput
       label="URL"
       name="url"
-      readonly={!editing}
+      {readonly}
       type="url"
       bind:value={gift.url}
     />
+
+    <div class="buttons">
+      {#if adding || editing}
+        <IconButton icon={faSave} title="Save" type="submit" />
+        <IconButton icon={faTimes} title="Cancel" on:click={cancelEdit} />
+      {:else}
+        <IconButton
+          icon={faAngleLeft}
+          size="2rem"
+          title="Back"
+          on:click={back}
+        />
+        <IconButton icon={faPencilAlt} title="Edit" on:click={editGift} />
+        <IconButton icon={faTrash} title="Delete" on:click={confirmDelete} />
+      {/if}
+    </div>
   </form>
 
   <Dialog bind:dialog title="Confirm Delete">
     <div class="question">
       Are you sure you want to delete {selectedGift ? selectedGift.name : ''}?
-      This will also delete all of the associated gifts.
     </div>
     <div class="buttons">
       <button on:click={deleteGift}>Yes</button>
@@ -162,5 +167,22 @@ Maybe this will be needed to add a new gift. -->
 </div>
 
 <style>
-  /* your styles go here */
+  .buttons {
+    display: flex;
+    column-gap: 0.5rem;
+  }
+
+  .buttons button {
+    background-color: var(--secondary-color);
+    flex-grow: 1;
+  }
+
+  form {
+    padding: 0 2px; /* so focus outline is not too close to edges */
+    padding-top: 0.5rem;
+  }
+
+  form :global(.labelled-input) {
+    margin-bottom: 1rem;
+  }
 </style>

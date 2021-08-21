@@ -55,10 +55,6 @@
     margin-bottom: 0.25rem;
   }
 
-  .labelled-select {
-    margin-bottom: 1rem;
-  }
-
   .required {
     color: white;
     font-size: 1.7rem;

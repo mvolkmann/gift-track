@@ -1,6 +1,18 @@
 # gift-track
 
 This is a web app created with SvelteKit.
+It tracks gift ideas and purchased gifts for multiple people and
+multiple occasions throughout the year.
+
+Here is list of the things that can be done in the app:
+
+- people: list, add, edit, and delete
+- occasions: list, add, edit, and delete
+- gifts
+  - list gifts for a selected person and occasion
+  - add a gift for a selected person and occasion
+  - edit a gift
+  - delete a gift
 
 Here are the steps I took to create this project:
 

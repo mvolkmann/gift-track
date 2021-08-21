@@ -32,7 +32,7 @@
     dispatch('update');
   }
 
-  async function confirmDelete(event: Event, item: Item) {
+  async function confirmDelete(_: Event, item: Item) {
     selectedItem = item;
     dialog.showModal();
   }

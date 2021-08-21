@@ -9,7 +9,7 @@
     loadKind(kind, loadInput);
 </script>
 
-<script type="ts">
+<script lang="ts">
   import Items from '$lib/Items.svelte';
   import type {Item} from '$lib/types';
 

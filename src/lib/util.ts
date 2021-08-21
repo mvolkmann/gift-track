@@ -1,4 +1,4 @@
-import type {Obj} from './types';
+import type {Obj} from '$lib/types';
 
 export function getLastDayInMonth(year: number, month: number): number {
   const date = new Date(year, month, 1);

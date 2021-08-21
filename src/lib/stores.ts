@@ -7,7 +7,7 @@ import type {
   OccasionMap,
   Person,
   PersonMap
-} from './types';
+} from '$lib/types';
 
 export const giftStore = writable<GiftMap>({});
 export const occasionStore = writable<OccasionMap>({});

@@ -1,8 +1,10 @@
 <script lang="ts">
+  import type {IconDefinition} from '@fortawesome/fontawesome-common-types';
+
   import Icon from 'fa-svelte';
 
   export let color = 'black';
-  export let icon;
+  export let icon: IconDefinition;
   export let size = '1.5rem';
   export let text = '';
   export let title = '';

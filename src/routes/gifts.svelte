@@ -3,10 +3,10 @@
   import {onMount} from 'svelte';
   import {goto} from '$app/navigation';
 
-  //import GiftForm from '$lib/GiftForm.svelte';
+  import GiftForm from '$lib/GiftForm.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledSelect from '$lib/LabelledSelect.svelte';
-  import {occasionStore, personStore, toastStore} from '$lib/stores';
+  import {occasionStore, personStore} from '$lib/stores';
   import type {Gift, Occasion, Person} from '$lib/types';
   import {sortObjects} from '$lib/util';
 
@@ -17,6 +17,8 @@
 
   let gifts: Gift[] = [];
   $: getGifts(selectedPerson, selectedOccasion);
+
+  let newGift: Gift | undefined;
 
   let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
@@ -31,25 +33,38 @@
     if (id) selectedOccasion = occasions.find(p => p.id === id) as Occasion;
   });
 
+  function addGift() {
+    newGift = {
+      description: '',
+      location: '',
+      name: '',
+      occasionId: selectedOccasion.id,
+      personId: selectedPerson.id,
+      price: 0,
+      url: ''
+    };
+    adding = true;
+  }
+
   async function getGifts(person: Person, occasion: Occasion) {
     if (!person || !occasion) return [];
 
-    //try {
     const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
     const res = await fetch(url);
-    console.log('gifts.svelte getGifts: res.status =', res.status);
     if (res.status !== 200) throw new Error(await res.text());
     //TODO: How can you make this render the error page?
     //TODO: Is seems that only happens when an Error is thrown in a load function.
     gifts = await res.json();
-    // } catch (e) {
-    //   console.error('gifts.svelte getGifts: e =', e);
-    // }
+    sortObjects(gifts, 'name');
   }
 
   function goToReport() {
     const url = `/person/${selectedPerson.id}/occasion/${selectedOccasion.id}/gift`;
     goto(url);
+  }
+
+  function loadGifts() {
+    getGifts(selectedPerson, selectedOccasion);
   }
 
   function selectOccasion(event: CustomEvent) {
@@ -62,10 +77,6 @@
     sessionStorage.setItem('person-id', String(selectedPerson.id));
   }
 </script>
-
-<!-- TODO: Implementing adding a new gift. Use GiftForm?
-     But don't duplicate all the code between GiftForm
-     and src/routes/gift/[id].svelte.  -->
 
 <section class="people">
   <form on:submit|preventDefault>
@@ -90,22 +101,16 @@
       />
     </div>
 
-    <!--TODO: After a person is selected, show all their gifts.
-         If an occasion is also selected,
-         only show those gifts and the total. -->
-
-    <!-- TODO: Allow adding a gift when both are selected. -->
-
     {#if selectedPerson && selectedOccasion}
       {#if adding}
-        <p>display form for adding a gift</p>
+        <GiftForm bind:adding gift={newGift} on:change={loadGifts} />
       {:else}
         <div>
           <IconButton
             color="white"
             icon={faPlus}
             title="Add Gift"
-            on:click={() => (adding = true)}
+            on:click={addGift}
           />
         </div>
         {#each gifts as gift}
@@ -113,11 +118,13 @@
         {:else}
           <p>No gifts found.</p>
         {/each}
-      {/if}
 
-      <button disabled={gifts.length === 0} on:click={goToReport}>
-        Go to Report
-      </button>
+        {#if gifts.length > 0}
+          <button disabled={gifts.length === 0} on:click={goToReport}>
+            Show Report
+          </button>
+        {/if}
+      {/if}
     {/if}
   </form>
 </section>
@@ -125,15 +132,23 @@
 <style>
   a {
     display: block;
-    margin-top: 1rem;
+    margin: 0.5rem 0;
   }
 
   button {
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  form {
+    padding-bottom: 1rem;
   }
 
   form > div {
     display: flex;
     gap: 1rem;
+  }
+
+  form :global(.labelled-select) {
+    margin-bottom: 1rem;
   }
 </style>
