@@ -1,7 +1,6 @@
 :root {
   --label-color: white;
-  /* --primary-color: cornflowerblue; */
-  --primary-color: #00308f;
+  --primary-color: #002d62;
   --bg-color: var(--primary-color);
   --secondary-color: orange;
 }
