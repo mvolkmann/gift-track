@@ -13,6 +13,7 @@
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Gift} from '$lib/types';
+  import {goToErrorPage} from '$lib/util';
 
   export let adding = false;
   export let gift: Gift;
@@ -26,12 +27,6 @@
 
   let readonly = false;
   $: readonly = !adding && !editing;
-
-  function back() {
-    //TODO: Which of these approaches is better?
-    history.back();
-    //goto(document.referrer || '/');
-  }
 
   function cancelEdit() {
     // Restore previous values.
@@ -49,13 +44,14 @@
     const url = `/api/gift/${selectedGift.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      console.log('gift/[id].svelte deleteGift: res =', res);
+      if (!res.ok) throw new Error(await res.text());
+
       selectedGift = null;
       dialog.close();
       goto('/gifts');
       dispatch('change');
     } catch (e) {
-      console.error('gift/[id].svelte deleteGift: e =', e);
+      goToErrorPage(e);
     }
   }
 
@@ -87,6 +83,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(gift)
       });
+      if (!res.ok) throw new Error(await res.text());
 
       if (editing) {
         editing = false;
@@ -96,7 +93,7 @@
         dispatch('change');
       }
     } catch (e) {
-      console.error('gift/[id].svelte updateItem: e =', e);
+      goToErrorPage(e);
     }
   }
 </script>
@@ -147,7 +144,7 @@
           icon={faAngleLeft}
           size="2rem"
           title="Back"
-          on:click={back}
+          on:click={() => history.back()}
         />
         <IconButton icon={faPencilAlt} title="Edit" on:click={editGift} />
         <IconButton icon={faTrash} title="Delete" on:click={confirmDelete} />

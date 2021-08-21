@@ -9,16 +9,13 @@
 </script>
 
 <script lang="ts">
+  import {browser} from '$app/env';
+  import {goToErrorPage} from '$lib/util';
+
   export let message: string;
+
+  if (browser) goToErrorPage(new Error(message));
 </script>
 
-<h2>{message}</h2>
-
-<img alt="bad gift" src="/images/bad-gift.jpg" />
-
-<style>
-  img {
-    object-fit: contain;
-    width: 100%;
-  }
-</style>
+<!-- This isn't expected to ever happen. -->
+<p>This page was rendered on the server and cannot access an error message.</p>

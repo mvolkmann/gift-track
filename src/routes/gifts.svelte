@@ -8,7 +8,7 @@
   import LabelledSelect from '$lib/LabelledSelect.svelte';
   import {occasionStore, personStore} from '$lib/stores';
   import type {Gift, Occasion, Person} from '$lib/types';
-  import {sortObjects} from '$lib/util';
+  import {goToErrorPage, sortObjects} from '$lib/util';
 
   $: occasions = sortObjects(Object.values($occasionStore), 'name');
   $: people = sortObjects(Object.values($personStore), 'name');
@@ -49,13 +49,16 @@
   async function getGifts(person: Person, occasion: Occasion) {
     if (!person || !occasion) return [];
 
-    const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
-    const res = await fetch(url);
-    if (res.status !== 200) throw new Error(await res.text());
-    //TODO: How can you make this render the error page?
-    //TODO: Is seems that only happens when an Error is thrown in a load function.
-    gifts = await res.json();
-    sortObjects(gifts, 'name');
+    try {
+      const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(await res.text());
+
+      gifts = await res.json();
+      sortObjects(gifts, 'name');
+    } catch (e) {
+      goToErrorPage(e);
+    }
   }
 
   function goToReport() {

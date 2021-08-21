@@ -29,12 +29,6 @@
 
   let total = 0;
   $: total = gifts.reduce((acc, gift) => acc + gift.price, 0);
-
-  function back() {
-    //TODO: Which of these approaches is better?
-    history.back();
-    //goto(document.referrer || '/');
-  }
 </script>
 
 <h2>{person.name}'s {occasion.name} Gifts</h2>
@@ -49,7 +43,7 @@
   Total: ${total}
 </p>
 
-<button on:click={back}>Back</button>
+<button on:click={() => history.back()}>Back</button>
 
 <style>
   h2 {

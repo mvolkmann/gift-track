@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Item, ItemKind} from '$lib/types';
-  import {getLastDayInMonth} from '$lib/util';
+  import {getLastDayInMonth, goToErrorPage} from '$lib/util';
 
   export let kind: ItemKind;
 
@@ -27,10 +27,12 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
+      if (!res.ok) throw new Error(await res.text());
+
       const newItem = await res.json();
       dispatch('add', newItem);
     } catch (e) {
-      console.error('ItemAddForm.svelte createItem: e =', e);
+      goToErrorPage(e);
     }
   }
 </script>

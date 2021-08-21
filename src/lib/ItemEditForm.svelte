@@ -11,6 +11,7 @@
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import type {Item, ItemKind} from '$lib/types';
+  import {goToErrorPage} from '$lib/util';
 
   export let item: Item;
   export let kind: ItemKind;
@@ -41,12 +42,13 @@
     const url = `/api/${kind}/${selectedItem.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      console.log('ItemEditForm.svelte deleteItem: res =', res);
+      if (!res.ok) throw new Error(await res.text());
+
       dispatch('delete', selectedItem.id);
       selectedItem = null;
       dialog.close();
     } catch (e) {
-      console.error('ItemEditForm.svelte deleteItem: e =', e);
+      goToErrorPage(e);
     }
   }
 
@@ -80,9 +82,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      console.log('ItemEditForm.svelte updateItem: res =', res);
-      //const text = await res.text();
-      //console.log('ItemEditForm.svelte updateItem: text =', text);
+      if (!res.ok) throw new Error(await res.text());
 
       // Move focus out of the input that has it.
       const form = event.target as HTMLFormElement;
@@ -91,7 +91,7 @@
 
       dispatch('update');
     } catch (e) {
-      console.error('ItemEditForm.svelte updateItem: e =', e);
+      goToErrorPage(e);
     }
   }
 </script>
@@ -156,6 +156,11 @@
   .buttons button {
     background-color: var(--secondary-color);
     flex-grow: 1;
+  }
+
+  .buttons :global(svg path) {
+    /* IconButton components */
+    fill: black;
   }
 
   form {
