@@ -2,7 +2,7 @@
   --label-color: white;
   --primary-color: #002d62;
   --bg-color: var(--primary-color);
-  --secondary-color: orange;
+  --secondary-color: #ffd17a;
 }
 
 a {
@@ -31,7 +31,6 @@ button.bare {
 }
 
 button:disabled {
-  /* background-color: red; */
   opacity: 50%;
 }
 
@@ -71,4 +70,8 @@ p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+* {
+  outline-color: var(--secondary-color);
 }
