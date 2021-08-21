@@ -105,6 +105,12 @@
       {#if adding}
         <GiftForm bind:adding gift={newGift} on:change={loadGifts} />
       {:else}
+        {#each gifts as gift}
+          <a href={`/gift/${gift.id}`}>{gift.name}</a>
+        {:else}
+          <p>No gifts found.</p>
+        {/each}
+
         <div>
           <IconButton
             color="white"
@@ -113,11 +119,6 @@
             on:click={addGift}
           />
         </div>
-        {#each gifts as gift}
-          <a href={`/gift/${gift.id}`}>{gift.name}</a>
-        {:else}
-          <p>No gifts found.</p>
-        {/each}
 
         {#if gifts.length > 0}
           <button disabled={gifts.length === 0} on:click={goToReport}>
