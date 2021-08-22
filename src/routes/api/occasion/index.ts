@@ -1,9 +1,9 @@
 import type {Request} from '@sveltejs/kit';
 import type {Occasion} from '$lib/types';
-import {addOccasion, getOccasions} from '../data';
+import {addOccasion, getAllOccasions} from '../data';
 
 export async function get(): Promise<{body: Occasion[]}> {
-  return {body: getOccasions()};
+  return {body: getAllOccasions()};
 }
 
 export async function post(request: Request): Promise<{body: Occasion}> {

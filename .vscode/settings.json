@@ -1,6 +1,9 @@
 {
   "cSpell.words": [
+    "Rowid",
+    "autoincrement",
     "introend",
+    "nocase",
     "noopener",
     "readonly",
     "sveltejs",

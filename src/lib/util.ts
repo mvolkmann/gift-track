@@ -9,7 +9,9 @@ export function getErrorMessage(error: Error | string): string {
   let text = error.toString();
 
   // Remove lines after first.
-  const index = text.indexOf('\n');
+  let index = text.indexOf('\n'); // real newline
+  if (index !== -1) text = text.substring(0, index);
+  index = text.indexOf('\\n'); // escaped newline
   if (index !== -1) text = text.substring(0, index);
 
   // Remove Error prefix.

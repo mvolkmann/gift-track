@@ -1,9 +1,9 @@
 import type {Request, Response} from '@sveltejs/kit';
 import type {Person} from '$lib/types';
-import {addPerson, getPeople} from '../data';
+import {addPerson, getAllPeople} from '../data';
 
 export async function get(): Promise<{body: Person[]}> {
-  return {body: getPeople()};
+  return {body: getAllPeople()};
 }
 
 export async function post(request: Request): Promise<Response> {

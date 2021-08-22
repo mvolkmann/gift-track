@@ -1,6 +1,34 @@
 // This defines server-side data storage.
 // It includes validation not performed in src/lib/stores.ts.
 
+import sqlite from 'better-sqlite3';
+import type {RunResult, Statement} from 'better-sqlite3';
+
+enum DataMode {
+  DATABASE,
+  LOCAL_STORAGE,
+  MEMORY
+}
+
+const mode: DataMode = DataMode.DATABASE;
+
+let deleteGiftPS: Statement;
+let deleteOccasionPS: Statement;
+let deletePersonPS: Statement;
+let getAllGiftsPS: Statement;
+let getAllOccasionsPS: Statement;
+let getAllPeoplePS: Statement;
+let getGiftPS: Statement;
+let getGiftsPS: Statement;
+let getOccasionPS: Statement;
+let getPersonPS: Statement;
+let insertGiftPS: Statement;
+let insertOccasionPS: Statement;
+let insertPersonPS: Statement;
+let updateGiftPS: Statement;
+let updateOccasionPS: Statement;
+let updatePersonPS: Statement;
+
 import type {Gift, Occasion, Person} from '$lib/types';
 
 let lastGiftId = 0;
@@ -11,214 +39,521 @@ const giftMap: {[id: number]: Gift} = {};
 const occasionMap: {[id: number]: Occasion} = {};
 const personMap: {[id: number]: Person} = {};
 
+function addData() {
+  if (mode === DataMode.DATABASE) databaseSetup();
+
+  const tami = addPerson({
+    name: 'Tami',
+    month: 9,
+    day: 9,
+    year: 1961
+  });
+
+  addPerson({
+    name: 'Mark',
+    month: 4,
+    day: 16,
+    year: 1961
+  });
+
+  addPerson({
+    name: 'Amanda',
+    month: 7,
+    day: 22,
+    year: 1985
+  });
+
+  addPerson({
+    name: 'Jeremy',
+    month: 4,
+    day: 30,
+    year: 1987
+  });
+
+  addPerson({
+    name: 'RC',
+    month: 2,
+    day: 27,
+    year: 1981
+  });
+
+  addPerson({
+    name: 'Meghan',
+    month: 7,
+    day: 9,
+    year: 1988
+  });
+
+  addPerson({
+    name: 'Richard',
+    month: 7,
+    day: 28,
+    year: 1940
+  });
+
+  addPerson({
+    name: 'Pat',
+    month: 2,
+    day: 16,
+    year: 1947
+  });
+
+  const birthday = addOccasion({
+    name: 'Birthday'
+  });
+
+  const christmas = addOccasion({
+    name: 'Christmas',
+    month: 12,
+    day: 25
+  });
+
+  addGift({
+    description: 'shop at REI',
+    name: 'hiking boots',
+    occasionId: christmas.id,
+    personId: tami.id,
+    price: 120,
+    url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
+  });
+
+  addGift({
+    description: 'Momentum',
+    name: 'water bottle',
+    occasionId: birthday.id,
+    personId: tami.id,
+    price: 15,
+    url:
+      'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
+  });
+
+  addGift({
+    description: 'Get the latest when it comes out.',
+    name: 'iPhone',
+    occasionId: birthday.id,
+    personId: tami.id,
+    price: 1000,
+    url: 'https://www.apple.com/iphone/'
+  });
+}
+
 export function addGift(gift: Gift): Gift {
   const name = gift.name.toLowerCase();
-  if (
-    Object.values(giftMap).some(
-      g =>
-        g.name.toLowerCase() === name &&
-        g.personId === gift.personId &&
-        g.occasionId === gift.occasionId
-    )
-  ) {
-    const personName = personMap[gift.personId].name;
-    const occasionName = occasionMap[gift.occasionId].name;
-    throw new Error(
-      `duplicate ${gift.name} ${occasionName} gift for ${personName}`
-    );
+
+  switch (mode) {
+    case DataMode.DATABASE:
+      try {
+        const result: RunResult = insertGiftPS.run(
+          gift.description,
+          gift.location,
+          gift.name,
+          gift.occasionId,
+          gift.personId,
+          gift.price,
+          gift.url
+        );
+        gift.id = result.lastInsertRowid as number;
+      } catch (e) {
+        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+        throw isDuplicate ? new Error(getDuplicateMessage(gift)) : e;
+      }
+      break;
+
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+
+    case DataMode.MEMORY:
+      if (
+        Object.values(giftMap).some(
+          g =>
+            g.name.toLowerCase() === name &&
+            g.personId === gift.personId &&
+            g.occasionId === gift.occasionId
+        )
+      ) {
+        const personName = personMap[gift.personId].name;
+        const occasionName = occasionMap[gift.occasionId].name;
+        throw new Error(
+          `duplicate ${gift.name} ${occasionName} gift for ${personName}`
+        );
+      }
+
+      gift.id = ++lastGiftId;
+      giftMap[lastGiftId] = gift;
+      break;
   }
 
-  gift.id = ++lastGiftId;
-  giftMap[lastGiftId] = gift;
   return gift;
 }
 
 export function addOccasion(occasion: Occasion): Occasion {
-  const name = occasion.name.toLowerCase();
-  if (Object.values(occasionMap).some(o => o.name.toLowerCase() === name)) {
-    throw new Error('duplicate occasion name ' + occasion.name);
+  switch (mode) {
+    case DataMode.DATABASE:
+      try {
+        const result: RunResult = insertOccasionPS.run(
+          occasion.name,
+          occasion.month,
+          occasion.day,
+          occasion.year
+        );
+        occasion.id = result.lastInsertRowid as number;
+      } catch (e) {
+        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+        throw isDuplicate
+          ? new Error('duplicate occasion name ' + occasion.name)
+          : e;
+      }
+      break;
+
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+
+    case DataMode.MEMORY: {
+      const name = occasion.name.toLowerCase();
+      if (Object.values(occasionMap).some(o => o.name.toLowerCase() === name)) {
+        throw new Error('duplicate occasion name ' + occasion.name);
+      }
+
+      occasion.id = ++lastOccasionId;
+      occasionMap[lastOccasionId] = occasion;
+      break;
+    }
   }
 
-  occasion.id = ++lastOccasionId;
-  occasionMap[lastOccasionId] = occasion;
   return occasion;
 }
 
 export function addPerson(person: Person): Person {
-  const name = person.name.toLowerCase();
-  if (Object.values(personMap).some(p => p.name.toLowerCase() === name)) {
-    throw new Error('duplicate person name ' + person.name);
+  switch (mode) {
+    case DataMode.DATABASE:
+      try {
+        const result: RunResult = insertPersonPS.run(
+          person.name,
+          person.month,
+          person.day,
+          person.year
+        );
+        person.id = result.lastInsertRowid as number;
+      } catch (e) {
+        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+        throw isDuplicate
+          ? new Error('duplicate person name ' + person.name)
+          : e;
+      }
+      break;
+
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+
+    case DataMode.MEMORY: {
+      const name = person.name.toLowerCase();
+      if (Object.values(personMap).some(o => o.name.toLowerCase() === name)) {
+        throw new Error('duplicate person name ' + person.name);
+      }
+
+      person.id = ++lastPersonId;
+      personMap[lastPersonId] = person;
+      break;
+    }
   }
 
-  person.id = ++lastPersonId;
-  personMap[lastPersonId] = person;
   return person;
 }
 
+function databaseSetup() {
+  // To create the initial, empty database,
+  // enter "sqlite3 gift-track.db" and ".exit";
+
+  // Open existing database file or creating if missing.
+  const db = sqlite('gift-track.db');
+
+  // Delete the tables if they already exist.
+  db.exec('drop table if exists gifts');
+  db.exec('drop table if exists people');
+  db.exec('drop table if exists occasions');
+
+  // Create the tables.
+  db.exec(
+    'create table people (' +
+      'id integer primary key autoincrement, ' +
+      'name string, ' +
+      'month integer, ' +
+      'day integer, ' +
+      'year integer, ' +
+      'unique (name collate nocase))' // case insensitive
+  );
+
+  db.exec(
+    'create table occasions (' +
+      'id integer primary key autoincrement, ' +
+      'name string, ' +
+      'month integer, ' +
+      'day integer, ' +
+      'year integer, ' +
+      'unique (name collate nocase))' // case insensitive
+  );
+
+  db.exec(
+    'create table gifts (' +
+      'id integer primary key autoincrement, ' +
+      'description string, ' +
+      'location string, ' +
+      'name string, ' +
+      'occasionId integer, ' +
+      'personId integer, ' +
+      'price numeric, ' +
+      'url string, ' +
+      'unique (name collate nocase), ' + // case insensitive
+      'constraint fk_occasion foreign key ' +
+      '  (occasionId) references occasions(id) on delete cascade ' +
+      'constraint fk_person foreign key ' +
+      '  (personId) references people(id) on delete cascade ' +
+      ')'
+  );
+
+  // Insert initial data.
+  insertGiftPS = db.prepare(
+    'insert into gifts ' +
+      '(description, location, name, occasionId, personId, price, url) ' +
+      'values (?, ?, ?, ?, ?, ?, ?)'
+  );
+  insertOccasionPS = db.prepare(
+    'insert into occasions (name, month, day, year) values (?, ?, ?, ?)'
+  );
+  insertPersonPS = db.prepare(
+    'insert into people (name, month, day, year) values (?, ?, ?, ?)'
+  );
+
+  // Create the prepared statements used by other functions.
+
+  getAllGiftsPS = db.prepare('select * from gifts');
+  getAllOccasionsPS = db.prepare('select * from occasions');
+  getAllPeoplePS = db.prepare('select * from people');
+  getGiftPS = db.prepare('select * from gifts where id = ?');
+  getGiftsPS = db.prepare(
+    'select * from gifts where personId = ? and occasionId = ?'
+  );
+  getOccasionPS = db.prepare('select * from occasions where id = ?');
+  getPersonPS = db.prepare('select * from people where id = ?');
+
+  updateGiftPS = db.prepare(
+    'update gifts set ' +
+      'description=?, location=?, name=?, occasionId=?, personId=?, price=?, url=? ' +
+      'where id = ?'
+  );
+  updateOccasionPS = db.prepare(
+    'update occasions set name=?, month=?, day=?, year=? where id = ?'
+  );
+  updatePersonPS = db.prepare(
+    'update people set name=?, month=?, day=?, year=? where id = ?'
+  );
+
+  deleteGiftPS = db.prepare('delete from gifts where id = ?');
+  deleteOccasionPS = db.prepare('delete from occasions where id = ?');
+  deletePersonPS = db.prepare('delete from people where id = ?');
+}
+
 export function deleteGift(id: number): boolean {
-  if (!giftMap[id]) return false;
-  delete giftMap[id];
+  switch (mode) {
+    case DataMode.DATABASE:
+      deleteGiftPS.run(id);
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!giftMap[id]) return false;
+      delete giftMap[id];
+  }
   return true;
 }
 
 export function deleteOccasion(id: number): boolean {
-  if (!occasionMap[id]) return false;
-  delete occasionMap[id];
-  // Delete all the gifts for this occasion.
-  for (const gift of Object.values(giftMap)) {
-    if (gift.occasionId === id) delete giftMap[gift.id];
+  switch (mode) {
+    case DataMode.DATABASE:
+      //TODO: Will this delete gifts via a cascading delete?
+      deleteOccasionPS.run(id);
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!occasionMap[id]) return false;
+      delete occasionMap[id];
+      // Delete all the gifts for this occasion.
+      for (const gift of Object.values(giftMap)) {
+        if (gift.occasionId === id) delete giftMap[gift.id];
+      }
   }
   return true;
 }
 
 export function deletePerson(id: number): boolean {
-  if (!personMap[id]) return false;
-  delete personMap[id];
-  // Delete all the gifts for this person.
-  for (const gift of Object.values(giftMap)) {
-    if (gift.personId === id) delete giftMap[gift.id];
+  switch (mode) {
+    case DataMode.DATABASE:
+      //TODO: Will this delete gifts via a cascading delete?
+      deletePersonPS.run(id);
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!personMap[id]) return false;
+      delete personMap[id];
+      // Delete all the gifts for this person.
+      for (const gift of Object.values(giftMap)) {
+        if (gift.personId === id) delete giftMap[gift.id];
+      }
   }
   return true;
 }
 
 export function getAllGifts(): Gift[] {
-  return Object.values(giftMap);
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getAllGiftsPS.all() as unknown) as Gift[];
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return Object.values(giftMap);
+  }
+}
+
+function getDuplicateMessage(gift: Gift) {
+  const person = getPerson(gift.personId);
+  const occasion = getOccasion(gift.occasionId);
+  return `duplicate ${gift.name} ${occasion.name} gift for ${person.name}`;
 }
 
 export function getGifts(personId: number, occasionId: number): Gift[] {
-  return Object.values(giftMap).filter(
-    gift => gift.personId === personId && gift.occasionId === occasionId
-  );
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getGiftsPS.all(personId, occasionId) as unknown) as Gift[];
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return Object.values(giftMap).filter(
+        gift => gift.personId === personId && gift.occasionId === occasionId
+      );
+  }
 }
 
-export function getOccasions(): Occasion[] {
-  return Object.values(occasionMap);
+export function getAllOccasions(): Occasion[] {
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getAllOccasionsPS.all() as unknown) as Occasion[];
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return Object.values(occasionMap);
+  }
 }
 
-export function getPeople(): Person[] {
-  return Object.values(personMap);
+export function getAllPeople(): Person[] {
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getAllPeoplePS.all() as unknown) as Person[];
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return Object.values(personMap);
+  }
 }
 
 export function getGift(id: number): Gift {
-  return giftMap[id];
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getGiftPS.get(id) as unknown) as Gift;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return giftMap[id];
+  }
 }
 
 export function getOccasion(id: number): Occasion {
-  return occasionMap[id];
+  switch (mode) {
+    case DataMode.DATABASE:
+      return (getOccasionPS.get(id) as unknown) as Occasion;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return occasionMap[id];
+  }
 }
 
 export function getPerson(id: number): Person {
-  return personMap[id];
+  switch (mode) {
+    case DataMode.DATABASE: {
+      const person = (getPersonPS.get(id) as unknown) as Person;
+      console.log('data.ts getPerson: person =', person);
+      return person;
+    }
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      return personMap[id];
+  }
 }
 
 export function updateGift(gift: Gift): boolean {
-  if (!giftMap[gift.id]) return false;
-  giftMap[gift.id] = gift;
+  switch (mode) {
+    case DataMode.DATABASE:
+      updateGiftPS.run(
+        gift.description,
+        gift.location,
+        gift.name,
+        gift.occasionId,
+        gift.personId,
+        gift.price,
+        gift.url,
+        gift.id
+      );
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!giftMap[gift.id]) return false;
+      giftMap[gift.id] = gift;
+  }
   return true;
 }
 
 export function updateOccasion(occasion: Occasion): boolean {
-  if (!occasionMap[occasion.id]) return false;
-  occasionMap[occasion.id] = occasion;
+  switch (mode) {
+    case DataMode.DATABASE:
+      updateOccasionPS.run(
+        occasion.name,
+        occasion.month,
+        occasion.day,
+        occasion.year,
+        occasion.id
+      );
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!occasionMap[occasion.id]) return false;
+      occasionMap[occasion.id] = occasion;
+  }
   return true;
 }
 
 export function updatePerson(person: Person): boolean {
-  if (!personMap[person.id]) return false;
-  personMap[person.id] = person;
+  switch (mode) {
+    case DataMode.DATABASE:
+      updatePersonPS.run(
+        person.name,
+        person.month,
+        person.day,
+        person.year,
+        person.id
+      );
+      break;
+    case DataMode.LOCAL_STORAGE:
+      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.MEMORY:
+      if (!personMap[person.id]) return false;
+      personMap[person.id] = person;
+  }
   return true;
 }
 
-const tami = addPerson({
-  name: 'Tami',
-  month: 9,
-  day: 9,
-  year: 1961
-});
-
-addPerson({
-  name: 'Mark',
-  month: 4,
-  day: 16,
-  year: 1961
-});
-
-addPerson({
-  name: 'Amanda',
-  month: 7,
-  day: 22,
-  year: 1985
-});
-
-addPerson({
-  name: 'Jeremy',
-  month: 4,
-  day: 30,
-  year: 1987
-});
-
-addPerson({
-  name: 'RC',
-  month: 2,
-  day: 27,
-  year: 1981
-});
-
-addPerson({
-  name: 'Meghan',
-  month: 7,
-  day: 9,
-  year: 1988
-});
-
-addPerson({
-  name: 'Richard',
-  month: 7,
-  day: 28,
-  year: 1940
-});
-
-addPerson({
-  name: 'Pat',
-  month: 2,
-  day: 16,
-  year: 1947
-});
-
-const birthday = addOccasion({
-  name: 'Birthday'
-});
-
-const christmas = addOccasion({
-  name: 'Christmas',
-  month: 12,
-  day: 25
-});
-
-addGift({
-  description: 'shop at REI',
-  name: 'hiking boots',
-  occasionId: christmas.id,
-  personId: tami.id,
-  price: 120,
-  url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
-});
-
-addGift({
-  description: 'Momentum',
-  name: 'water bottle',
-  occasionId: birthday.id,
-  personId: tami.id,
-  price: 15,
-  url:
-    'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
-});
-
-addGift({
-  description: 'Get the latest when it comes out.',
-  name: 'iPhone',
-  occasionId: birthday.id,
-  personId: tami.id,
-  price: 1000,
-  url: 'https://www.apple.com/iphone/'
-});
+addData();
