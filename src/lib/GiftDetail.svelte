@@ -30,7 +30,7 @@
   }
 
   .gift {
-    background-color: white;
+    background-color: var(--label-color);
     border: none;
     border-radius: 0.5rem;
     color: black;

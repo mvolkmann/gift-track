@@ -56,7 +56,6 @@
   }
 
   .required {
-    color: white;
     font-size: 1.7rem;
     position: relative;
     top: 0.6rem;

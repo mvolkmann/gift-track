@@ -147,12 +147,7 @@
         {/each}
 
         <div>
-          <IconButton
-            color="white"
-            icon={faPlus}
-            title="Add Gift"
-            on:click={addGift}
-          />
+          <IconButton icon={faPlus} title="Add Gift" on:click={addGift} />
         </div>
 
         {#if gifts.length > 0}

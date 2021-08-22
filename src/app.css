@@ -5,7 +5,11 @@
   --secondary-color: #ffd17a;
 }
 
-a {
+a,
+label,
+li,
+p,
+span {
   color: var(--label-color);
 }
 
@@ -61,13 +65,8 @@ h2 {
 }
 
 label {
-  color: var(--label-color);
   font-weight: bold;
   margin-right: 0.5rem;
-}
-
-p {
-  color: var(--label-color);
 }
 
 .truncate {

@@ -165,7 +165,7 @@
     display: flex;
     align-items: center;
 
-    background-color: white;
+    background-color: var(--label-color);
     border-radius: 0.5rem;
     box-sizing: border-box;
     margin-bottom: 1rem;

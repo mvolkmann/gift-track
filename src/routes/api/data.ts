@@ -3,14 +3,16 @@
 import sqlite from 'better-sqlite3';
 import type {RunResult, Statement} from 'better-sqlite3';
 
+//TODO: localStorage is not defined server-side!
 enum DataMode {
   DATABASE,
   LOCAL_STORAGE,
   MEMORY
 }
 
-//const mode: DataMode = DataMode.DATABASE;
-const mode: DataMode = DataMode.MEMORY;
+const mode: DataMode = DataMode.DATABASE;
+//const mode: DataMode = DataMode.MEMORY;
+//const mode: DataMode = DataMode.LOCAL_STORAGE;
 
 let deleteGiftPS: Statement;
 let deleteOccasionPS: Statement;
@@ -56,47 +58,47 @@ function addData() {
     year: 1961
   });
 
-  addPerson({
-    name: 'Amanda',
-    month: 7,
-    day: 22,
-    year: 1985
-  });
+  //   addPerson({
+  //     name: 'Amanda',
+  //     month: 7,
+  //     day: 22,
+  //     year: 1985
+  //   });
 
-  addPerson({
-    name: 'Jeremy',
-    month: 4,
-    day: 30,
-    year: 1987
-  });
+  //   addPerson({
+  //     name: 'Jeremy',
+  //     month: 4,
+  //     day: 30,
+  //     year: 1987
+  //   });
 
-  addPerson({
-    name: 'RC',
-    month: 2,
-    day: 27,
-    year: 1981
-  });
+  //   addPerson({
+  //     name: 'RC',
+  //     month: 2,
+  //     day: 27,
+  //     year: 1981
+  //   });
 
-  addPerson({
-    name: 'Meghan',
-    month: 7,
-    day: 9,
-    year: 1988
-  });
+  //   addPerson({
+  //     name: 'Meghan',
+  //     month: 7,
+  //     day: 9,
+  //     year: 1988
+  //   });
 
-  addPerson({
-    name: 'Richard',
-    month: 7,
-    day: 28,
-    year: 1940
-  });
+  //   addPerson({
+  //     name: 'Richard',
+  //     month: 7,
+  //     day: 28,
+  //     year: 1940
+  //   });
 
-  addPerson({
-    name: 'Pat',
-    month: 2,
-    day: 16,
-    year: 1947
-  });
+  //   addPerson({
+  //     name: 'Pat',
+  //     month: 2,
+  //     day: 16,
+  //     year: 1947
+  //   });
 
   const birthday = addOccasion({
     name: 'Birthday'
@@ -108,33 +110,33 @@ function addData() {
     day: 25
   });
 
-  addGift({
-    description: 'shop at REI',
-    name: 'hiking boots',
-    occasionId: christmas.id,
-    personId: tami.id,
-    price: 120,
-    url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
-  });
+  //   addGift({
+  //     description: 'shop at REI',
+  //     name: 'hiking boots',
+  //     occasionId: christmas.id,
+  //     personId: tami.id,
+  //     price: 120,
+  //     url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
+  //   });
 
-  addGift({
-    description: 'Momentum',
-    name: 'water bottle',
-    occasionId: birthday.id,
-    personId: tami.id,
-    price: 15,
-    url:
-      'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
-  });
+  //   addGift({
+  //     description: 'Momentum',
+  //     name: 'water bottle',
+  //     occasionId: birthday.id,
+  //     personId: tami.id,
+  //     price: 15,
+  //     url:
+  //       'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
+  //   });
 
-  addGift({
-    description: 'Get the latest when it comes out.',
-    name: 'iPhone',
-    occasionId: birthday.id,
-    personId: tami.id,
-    price: 1000,
-    url: 'https://www.apple.com/iphone/'
-  });
+  //   addGift({
+  //     description: 'Get the latest when it comes out.',
+  //     name: 'iPhone',
+  //     occasionId: birthday.id,
+  //     personId: tami.id,
+  //     price: 1000,
+  //     url: 'https://www.apple.com/iphone/'
+  //   });
 }
 
 export function addGift(gift: Gift): Gift {
@@ -159,8 +161,12 @@ export function addGift(gift: Gift): Gift {
       }
       break;
 
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      giftMap[gift.id] = gift;
+      localStorage.setItem('gifts', JSON.stringify(giftMap));
+      break;
+    }
 
     case DataMode.MEMORY:
       if (
@@ -205,8 +211,12 @@ export function addOccasion(occasion: Occasion): Occasion {
       }
       break;
 
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
+      occasionMap[occasion.id] = occasion;
+      localStorage.setItem('occasions', JSON.stringify(occasionMap));
+      break;
+    }
 
     case DataMode.MEMORY: {
       const name = occasion.name.toLowerCase();
@@ -242,8 +252,12 @@ export function addPerson(person: Person): Person {
       }
       break;
 
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const personMap = JSON.parse(localStorage.getItem('people'));
+      personMap[person.id] = person;
+      localStorage.setItem('people', JSON.stringify(personMap));
+      break;
+    }
 
     case DataMode.MEMORY: {
       const name = person.name.toLowerCase();
@@ -362,8 +376,12 @@ export function deleteGift(id: number): boolean {
     case DataMode.DATABASE:
       deleteGiftPS.run(id);
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      delete giftMap[id];
+      localStorage.setItem('gifts', JSON.stringify(giftMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!giftMap[id]) return false;
       delete giftMap[id];
@@ -377,8 +395,12 @@ export function deleteOccasion(id: number): boolean {
       // This does a cascading delete, deleting all gifts for this occasion.
       deleteOccasionPS.run(id);
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
+      delete occasionMap[id];
+      localStorage.setItem('occasions', JSON.stringify(occasionMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!occasionMap[id]) return false;
       delete occasionMap[id];
@@ -396,8 +418,12 @@ export function deletePerson(id: number): boolean {
       // This does a cascading delete, deleting all gifts for this person.
       deletePersonPS.run(id);
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const personMap = JSON.parse(localStorage.getItem('people'));
+      delete personMap[id];
+      localStorage.setItem('people', JSON.stringify(personMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!personMap[id]) return false;
       delete personMap[id];
@@ -413,8 +439,10 @@ export function getAllGifts(): Gift[] {
   switch (mode) {
     case DataMode.DATABASE:
       return (getAllGiftsPS.all() as unknown) as Gift[];
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      return Object.values(giftMap);
+    }
     case DataMode.MEMORY:
       return Object.values(giftMap);
   }
@@ -430,8 +458,13 @@ export function getGifts(personId: number, occasionId: number): Gift[] {
   switch (mode) {
     case DataMode.DATABASE:
       return (getGiftsPS.all(personId, occasionId) as unknown) as Gift[];
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      const gifts = Object.values(giftMap) as Gift[];
+      return gifts.filter(
+        gift => gift.personId === personId && gift.occasionId === occasionId
+      );
+    }
     case DataMode.MEMORY:
       return Object.values(giftMap).filter(
         gift => gift.personId === personId && gift.occasionId === occasionId
@@ -443,8 +476,10 @@ export function getAllOccasions(): Occasion[] {
   switch (mode) {
     case DataMode.DATABASE:
       return (getAllOccasionsPS.all() as unknown) as Occasion[];
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
+      return Object.values(occasionMap);
+    }
     case DataMode.MEMORY:
       return Object.values(occasionMap);
   }
@@ -454,8 +489,10 @@ export function getAllPeople(): Person[] {
   switch (mode) {
     case DataMode.DATABASE:
       return (getAllPeoplePS.all() as unknown) as Person[];
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const personMap = JSON.parse(localStorage.getItem('people'));
+      return Object.values(personMap);
+    }
     case DataMode.MEMORY:
       return Object.values(personMap);
   }
@@ -465,8 +502,10 @@ export function getGift(id: number): Gift {
   switch (mode) {
     case DataMode.DATABASE:
       return (getGiftPS.get(id) as unknown) as Gift;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      return giftMap[id];
+    }
     case DataMode.MEMORY:
       return giftMap[id];
   }
@@ -476,8 +515,10 @@ export function getOccasion(id: number): Occasion {
   switch (mode) {
     case DataMode.DATABASE:
       return (getOccasionPS.get(id) as unknown) as Occasion;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
+      return occasionMap[id];
+    }
     case DataMode.MEMORY:
       return occasionMap[id];
   }
@@ -487,8 +528,10 @@ export function getPerson(id: number): Person {
   switch (mode) {
     case DataMode.DATABASE:
       return (getPersonPS.get(id) as unknown) as Person;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const personMap = JSON.parse(localStorage.getItem('people'));
+      return personMap[id];
+    }
     case DataMode.MEMORY:
       return personMap[id];
   }
@@ -508,8 +551,12 @@ export function updateGift(gift: Gift): boolean {
         gift.id
       );
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const giftMap = JSON.parse(localStorage.getItem('gifts'));
+      giftMap[gift.id] = gift;
+      localStorage.setItem('gifts', JSON.stringify(giftMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!giftMap[gift.id]) return false;
       giftMap[gift.id] = gift;
@@ -528,8 +575,12 @@ export function updateOccasion(occasion: Occasion): boolean {
         occasion.id
       );
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
+      occasionMap[occasion.id] = occasion;
+      localStorage.setItem('occasions', JSON.stringify(occasionMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!occasionMap[occasion.id]) return false;
       occasionMap[occasion.id] = occasion;
@@ -548,8 +599,12 @@ export function updatePerson(person: Person): boolean {
         person.id
       );
       break;
-    case DataMode.LOCAL_STORAGE:
-      throw new Error('localStorage mode is not supported yet.');
+    case DataMode.LOCAL_STORAGE: {
+      const personMap = JSON.parse(localStorage.getItem('people'));
+      personMap[person.id] = person;
+      localStorage.setItem('people', JSON.stringify(personMap));
+      break;
+    }
     case DataMode.MEMORY:
       if (!personMap[person.id]) return false;
       personMap[person.id] = person;

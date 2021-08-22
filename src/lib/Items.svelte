@@ -36,7 +36,6 @@
   <h2>
     {title}
     <IconButton
-      color="white"
       icon={faPlus}
       title="Add {kind}"
       on:click={() => (adding = true)}
