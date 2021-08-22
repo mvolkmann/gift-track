@@ -1,6 +1,6 @@
 import type {Request} from '@sveltejs/kit';
 import type {Gift, GiftResponse} from '$lib/types';
-import {deleteGift, getGift, updateGift} from '../../../../../data';
+import {deleteGift, getGift, updateGift} from '$lib/../routes/api/data';
 
 export async function del(request: Request): Promise<GiftResponse> {
   const id = Number(request.params.giftId);

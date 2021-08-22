@@ -8,16 +8,16 @@
     const occasionId = Number(page.params.occasionId);
 
     let res = await fetch(`/api/person/${personId}`);
-    verifyResponse(res, 'person ' + personId);
+    await verifyResponse(res, 'person ' + personId);
     const person = await res.json();
 
     res = await fetch(`/api/occasion/${occasionId}`);
-    verifyResponse(res, 'occasion ' + occasionId);
+    await verifyResponse(res, 'occasion ' + occasionId);
     const occasion = await res.json();
 
     const url = `/api/person/${personId}/occasion/${occasionId}/gift`;
     res = await fetch(url);
-    verifyResponse(res, 'gifts');
+    await verifyResponse(res, 'gifts');
     const gifts = await res.json();
 
     return {props: {person, occasion, gifts}};

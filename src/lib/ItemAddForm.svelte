@@ -27,7 +27,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      verifyResponse(res, kind);
+      await verifyResponse(res, kind);
 
       const newItem = await res.json();
       dispatch('add', newItem);

@@ -1,3 +1,6 @@
+// This defines server-side data storage.
+// It includes validation not performed in src/lib/stores.ts.
+
 import type {Gift, Occasion, Person} from '$lib/types';
 
 let lastGiftId = 0;
@@ -9,18 +12,41 @@ const occasionMap: {[id: number]: Occasion} = {};
 const personMap: {[id: number]: Person} = {};
 
 export function addGift(gift: Gift): Gift {
+  if (
+    Object.values(giftMap).some(
+      g =>
+        g.name === gift.name &&
+        g.personId === gift.personId &&
+        g.occasionId === gift.occasionId
+    )
+  ) {
+    const personName = personMap[gift.personId].name;
+    const occasionName = occasionMap[gift.occasionId].name;
+    throw new Error(
+      `duplicate ${gift.name} ${occasionName} gift for ${personName}`
+    );
+  }
+
   gift.id = ++lastGiftId;
   giftMap[lastGiftId] = gift;
   return gift;
 }
 
 export function addOccasion(occasion: Occasion): Occasion {
+  if (Object.values(occasionMap).some(o => o.name === occasion.name)) {
+    throw new Error('duplicate occasion name ' + occasion.name);
+  }
+
   occasion.id = ++lastOccasionId;
   occasionMap[lastOccasionId] = occasion;
   return occasion;
 }
 
 export function addPerson(person: Person): Person {
+  if (Object.values(personMap).some(p => p.name === person.name)) {
+    throw new Error('duplicate person name ' + person.name);
+  }
+
   person.id = ++lastPersonId;
   personMap[lastPersonId] = person;
   return person;

@@ -52,7 +52,7 @@
     try {
       const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
       const res = await fetch(url);
-      verifyResponse(res, `person ${person.id}, occasion ${occasion.id}`);
+      await verifyResponse(res, `person ${person.id}, occasion ${occasion.id}`);
 
       gifts = await res.json();
       sortObjects(gifts, 'name');

@@ -15,7 +15,10 @@ export function getLastDayInMonth(year: number, month: number): number {
 
 export function goToErrorPage(error: Error): void {
   if (browser) {
-    errorStore.set(error.toString());
+    // Get the first line of the error message.
+    const text = error.toString();
+    const index = text.indexOf('\n');
+    errorStore.set(text.substring(0, index));
     goto('/error');
   }
 }
@@ -35,11 +38,20 @@ export function sortObjects(
   return objects;
 }
 
-export function verifyResponse(res: globalThis.Response, target: string): void {
-  if (res.ok) return;
-  if (res.status === 404) throw new Error(target + ' not found');
-  res.text().then(t => {
-    console.trace(t);
-    throw new Error(t);
+export async function verifyResponse(
+  res: globalThis.Response,
+  target: string
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (res.ok) {
+      resolve('');
+    } else if (res.status === 404) {
+      reject(target + ' not found');
+    } else {
+      res.text().then(t => {
+        console.trace(t);
+        reject(t);
+      });
+    }
   });
 }

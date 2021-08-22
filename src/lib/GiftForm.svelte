@@ -44,7 +44,7 @@
     const url = `/api/gift/${selectedGift.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      verifyResponse(res, 'gift ' + selectedGift.id);
+      await verifyResponse(res, 'gift ' + selectedGift.id);
 
       selectedGift = null;
       dialog.close();
@@ -75,15 +75,13 @@
     const url = `/api/gift${adding ? '' : '/' + gift.id}`;
     const method = adding ? 'POST' : 'PUT';
 
-    //TODO: Don't allow duplicate names.
-
     try {
       const res = await fetch(url, {
         method,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(gift)
       });
-      verifyResponse(res, adding ? 'gift' : 'gift ' + gift.id);
+      await verifyResponse(res, adding ? 'gift' : 'gift ' + gift.id);
 
       if (editing) {
         editing = false;

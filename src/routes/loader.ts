@@ -7,7 +7,7 @@ export async function loadKind(
   {fetch}: LoadInput
 ): Promise<LoadOutput> {
   const res = await fetch('/api/' + kind);
-  verifyResponse(res, kind);
+  await verifyResponse(res, kind);
 
   const items = await res.json();
   items.sort((p1: Item, p2: Item) => p1.name.localeCompare(p2.name));

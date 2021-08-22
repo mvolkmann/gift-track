@@ -6,7 +6,7 @@
   export async function load({fetch, page}: LoadInput): Promise<LoadOutput> {
     const {id} = page.params;
     const res = await fetch('/api/gift/' + id);
-    verifyResponse(res, 'gift ' + id);
+    await verifyResponse(res, 'gift ' + id);
 
     const gift = await res.json();
     return {props: {gift}};

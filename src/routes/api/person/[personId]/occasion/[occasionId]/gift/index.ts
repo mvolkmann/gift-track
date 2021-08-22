@@ -1,6 +1,6 @@
 import type {Request} from '@sveltejs/kit';
 import type {Gift} from '$lib/types';
-import {addGift, getGifts} from '../../../../../data';
+import {addGift, getGifts} from '$lib/../routes/api/data';
 
 export async function get(request: Request): Promise<{body: Gift[]}> {
   const personId = Number(request.params.personId);

@@ -42,7 +42,7 @@
     const url = `/api/${kind}/${selectedItem.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      verifyResponse(res, kind + ' ' + selectedItem.id);
+      await verifyResponse(res, kind + ' ' + selectedItem.id);
 
       dispatch('delete', selectedItem.id);
       selectedItem = null;
@@ -74,15 +74,13 @@
     const url = `/api/${kind}/${item.id}`;
     delete item.editing;
 
-    //TODO: Don't allow duplicate names.
-
     try {
       const res = await fetch(url, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      verifyResponse(res, kind + ' ' + item.id);
+      await verifyResponse(res, kind + ' ' + item.id);
 
       // Move focus out of the input that has it.
       const form = event.target as HTMLFormElement;

@@ -1,3 +1,6 @@
+// This defines client-side data storage.
+// It omits some validation that is only done in src/api/data.ts.
+
 import {writable} from 'svelte/store';
 
 import type {
