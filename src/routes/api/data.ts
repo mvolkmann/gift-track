@@ -1,5 +1,4 @@
-// This defines server-side data storage.
-// It includes validation not performed in src/lib/stores.ts.
+// This defines server-side data storage and performs data validation.
 
 import sqlite from 'better-sqlite3';
 import type {RunResult, Statement} from 'better-sqlite3';
@@ -267,6 +266,10 @@ function databaseSetup() {
   // Open existing database file or creating if missing.
   const db = sqlite('gift-track.db');
 
+  // This pragma must be enabled in order to
+  // check foreign key constraints and perform cascading deletes.
+  db.pragma('foreign_key = true');
+
   // Delete the tables if they already exist.
   db.exec('drop table if exists gifts');
   db.exec('drop table if exists people');
@@ -370,7 +373,7 @@ export function deleteGift(id: number): boolean {
 export function deleteOccasion(id: number): boolean {
   switch (mode) {
     case DataMode.DATABASE:
-      //TODO: Will this delete gifts via a cascading delete?
+      // This does a cascading delete, deleting all gifts for this occasion.
       deleteOccasionPS.run(id);
       break;
     case DataMode.LOCAL_STORAGE:
@@ -389,7 +392,7 @@ export function deleteOccasion(id: number): boolean {
 export function deletePerson(id: number): boolean {
   switch (mode) {
     case DataMode.DATABASE:
-      //TODO: Will this delete gifts via a cascading delete?
+      // This does a cascading delete, deleting all gifts for this person.
       deletePersonPS.run(id);
       break;
     case DataMode.LOCAL_STORAGE:

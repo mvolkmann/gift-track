@@ -1,3 +1,19 @@
+<script context="module" lang="ts">
+  import type {LoadInput, LoadOutput} from '@sveltejs/kit/types';
+
+  export async function load({fetch}: LoadInput): Promise<LoadOutput> {
+    let res = await fetch('/api/person');
+    await verifyResponse(res, 'people');
+    const people = await res.json();
+
+    res = await fetch('/api/occasion');
+    await verifyResponse(res, 'occasions');
+    const occasions = await res.json();
+
+    return {props: {occasions, people}};
+  }
+</script>
+
 <script lang="ts">
   import {faPlus} from '@fortawesome/free-solid-svg-icons';
   import {onMount} from 'svelte';
@@ -6,22 +22,36 @@
   import GiftForm from '$lib/GiftForm.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import LabelledSelect from '$lib/LabelledSelect.svelte';
-  import {occasionStore, personStore} from '$lib/stores';
   import type {Gift, Occasion, Person} from '$lib/types';
   import {goToErrorPage, sortObjects, verifyResponse} from '$lib/util';
 
-  $: occasions = sortObjects(Object.values($occasionStore), 'name');
-  $: people = sortObjects(Object.values($personStore), 'name');
+  export let occasions: Occasion[];
+  export let people: Person[];
+
+  $: occasions = sortObjects(occasions, 'name') as Occasion[];
+  $: people = sortObjects(people, 'name') as Person[];
 
   let adding = false;
 
   let gifts: Gift[] = [];
   $: getGifts(selectedPerson, selectedOccasion);
 
-  let newGift: Gift | undefined;
+  const newGift: Gift = {
+    description: '',
+    location: '',
+    name: '',
+    occasionId: 0,
+    personId: 0,
+    price: 0,
+    url: ''
+  };
 
   let selectedOccasion: Occasion | null = null;
   let selectedPerson: Person | null = null;
+  $: console.log('gifts.svelte x: selectedPerson =', selectedPerson);
+  $: console.log('gifts.svelte x: selectedOccasion =', selectedOccasion);
+  $: newGift.personId = selectedPerson?.id;
+  $: newGift.occasionId = selectedOccasion?.id;
 
   onMount(() => {
     // Restore the last selected person.
@@ -34,15 +64,13 @@
   });
 
   function addGift() {
-    newGift = {
-      description: '',
-      location: '',
-      name: '',
-      occasionId: selectedOccasion.id,
-      personId: selectedPerson.id,
-      price: 0,
-      url: ''
-    };
+    // Clear previous data.
+    newGift.description = '';
+    newGift.location = '';
+    newGift.name = '';
+    newGift.price = 0;
+    newGift.url = '';
+
     adding = true;
   }
 
