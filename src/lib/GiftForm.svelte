@@ -13,7 +13,7 @@
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Gift} from '$lib/types';
-  import {goToErrorPage, verifyResponse} from '$lib/util';
+  import {getErrorMessage, verifyResponse} from '$lib/util';
 
   export let adding = false;
   export let gift: Gift;
@@ -22,6 +22,7 @@
 
   let dialog: HTMLDialogElement;
   let editing = false;
+  let error = '';
   let savedGift: Gift;
   let selectedGift: Gift;
 
@@ -51,7 +52,7 @@
       goto('/gifts');
       dispatch('change');
     } catch (e) {
-      goToErrorPage(e);
+      error = getErrorMessage(e);
     }
   }
 
@@ -91,7 +92,7 @@
         dispatch('change');
       }
     } catch (e) {
-      goToErrorPage(e);
+      error = getErrorMessage(e);
     }
   }
 </script>
@@ -148,6 +149,7 @@
         <IconButton icon={faTrash} title="Delete" on:click={confirmDelete} />
       {/if}
     </div>
+    <div class="error">{error}</div>
   </form>
 
   <Dialog bind:dialog title="Confirm Delete">
@@ -166,6 +168,7 @@
   .buttons {
     display: flex;
     column-gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .buttons button {

@@ -46,6 +46,10 @@ select {
   padding: 0.5rem;
 }
 
+.error {
+  color: red;
+}
+
 .fa-svelte {
   color: var(--label-color);
   font-size: 1.2rem;

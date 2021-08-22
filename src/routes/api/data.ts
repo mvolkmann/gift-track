@@ -12,10 +12,11 @@ const occasionMap: {[id: number]: Occasion} = {};
 const personMap: {[id: number]: Person} = {};
 
 export function addGift(gift: Gift): Gift {
+  const name = gift.name.toLowerCase();
   if (
     Object.values(giftMap).some(
       g =>
-        g.name === gift.name &&
+        g.name.toLowerCase() === name &&
         g.personId === gift.personId &&
         g.occasionId === gift.occasionId
     )
@@ -33,7 +34,8 @@ export function addGift(gift: Gift): Gift {
 }
 
 export function addOccasion(occasion: Occasion): Occasion {
-  if (Object.values(occasionMap).some(o => o.name === occasion.name)) {
+  const name = occasion.name.toLowerCase();
+  if (Object.values(occasionMap).some(o => o.name.toLowerCase() === name)) {
     throw new Error('duplicate occasion name ' + occasion.name);
   }
 
@@ -43,7 +45,8 @@ export function addOccasion(occasion: Occasion): Occasion {
 }
 
 export function addPerson(person: Person): Person {
-  if (Object.values(personMap).some(p => p.name === person.name)) {
+  const name = person.name.toLowerCase();
+  if (Object.values(personMap).some(p => p.name.toLowerCase() === name)) {
     throw new Error('duplicate person name ' + person.name);
   }
 

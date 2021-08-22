@@ -5,6 +5,24 @@ import type {Obj} from '$lib/types';
 
 const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+export function getErrorMessage(error: Error | string): string {
+  let text = error.toString();
+
+  // Remove lines after first.
+  const index = text.indexOf('\n');
+  if (index !== -1) text = text.substring(0, index);
+
+  // Remove Error prefix.
+  const PREFIX = 'Error: ';
+  if (text.startsWith(PREFIX)) text = text.substring(PREFIX.length);
+
+  // Remove quotes from beginning and end.
+  if (text.startsWith('"')) text = text.substring(1);
+  if (text.endsWith('"')) text = text.substring(0, text.length - 1);
+
+  return text;
+}
+
 export function getLastDayInMonth(year: number, month: number): number {
   if (!month) return 31; // best guess
   if (!year) return DAYS[month - 1]; // can't determine if leap year
@@ -13,12 +31,9 @@ export function getLastDayInMonth(year: number, month: number): number {
   return date.getDate();
 }
 
-export function goToErrorPage(error: Error): void {
+export function goToErrorPage(error: Error | string): void {
   if (browser) {
-    // Get the first line of the error message.
-    const text = error.toString();
-    const index = text.indexOf('\n');
-    errorStore.set(text.substring(0, index));
+    errorStore.set(getErrorMessage(error));
     goto('/error');
   }
 }

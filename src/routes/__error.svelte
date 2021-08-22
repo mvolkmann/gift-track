@@ -14,7 +14,7 @@
 
   export let message: string;
 
-  if (browser) goToErrorPage(new Error(message));
+  if (browser) goToErrorPage(message);
 </script>
 
 <!-- This isn't expected to ever happen. -->
