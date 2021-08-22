@@ -1,19 +1,23 @@
 <script context="module" lang="ts">
-  import type {LoadInput, LoadOutput} from '@sveltejs/kit/types';
+  import type {LoadInput, LoadOutput} from '@sveltejs/kit';
   import GiftDetail from '$lib/GiftDetail.svelte';
+  import {verifyResponse} from '$lib/util';
 
   export async function load({page, fetch}: LoadInput): Promise<LoadOutput> {
     const personId = Number(page.params.personId);
     const occasionId = Number(page.params.occasionId);
 
     let res = await fetch(`/api/person/${personId}`);
+    verifyResponse(res, 'person ' + personId);
     const person = await res.json();
 
     res = await fetch(`/api/occasion/${occasionId}`);
+    verifyResponse(res, 'occasion ' + occasionId);
     const occasion = await res.json();
 
     const url = `/api/person/${personId}/occasion/${occasionId}/gift`;
     res = await fetch(url);
+    verifyResponse(res, 'gifts');
     const gifts = await res.json();
 
     return {props: {person, occasion, gifts}};

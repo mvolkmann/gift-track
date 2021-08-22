@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Item, ItemKind} from '$lib/types';
-  import {getLastDayInMonth, goToErrorPage} from '$lib/util';
+  import {getLastDayInMonth, goToErrorPage, verifyResponse} from '$lib/util';
 
   export let kind: ItemKind;
 
@@ -27,7 +27,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, kind);
 
       const newItem = await res.json();
       dispatch('add', newItem);

@@ -193,5 +193,3 @@ addGift({
   price: 1000,
   url: 'https://www.apple.com/iphone/'
 });
-
-//console.log('data.ts x: giftMap =', giftMap);

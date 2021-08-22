@@ -8,7 +8,7 @@
   import LabelledSelect from '$lib/LabelledSelect.svelte';
   import {occasionStore, personStore} from '$lib/stores';
   import type {Gift, Occasion, Person} from '$lib/types';
-  import {goToErrorPage, sortObjects} from '$lib/util';
+  import {goToErrorPage, sortObjects, verifyResponse} from '$lib/util';
 
   $: occasions = sortObjects(Object.values($occasionStore), 'name');
   $: people = sortObjects(Object.values($personStore), 'name');
@@ -52,7 +52,7 @@
     try {
       const url = `/api/person/${person.id}/occasion/${occasion.id}/gift`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, `person ${person.id}, occasion ${occasion.id}`);
 
       gifts = await res.json();
       sortObjects(gifts, 'name');

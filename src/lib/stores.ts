@@ -9,6 +9,7 @@ import type {
   PersonMap
 } from '$lib/types';
 
+export const errorStore = writable<string>('');
 export const giftStore = writable<GiftMap>({});
 export const occasionStore = writable<OccasionMap>({});
 export const personStore = writable<PersonMap>({});

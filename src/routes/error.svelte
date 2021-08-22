@@ -1,10 +1,11 @@
 <script lang="ts">
   import {browser} from '$app/env';
+  import {errorStore} from '$lib/stores';
 
   let message = '';
 
   if (browser) {
-    let msg = sessionStorage.getItem('errorMessage');
+    let msg = $errorStore;
     if (msg) {
       const PREFIX = 'Error: ';
       if (msg.startsWith(PREFIX)) msg = msg.substring(PREFIX.length);

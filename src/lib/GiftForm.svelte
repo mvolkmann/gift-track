@@ -13,7 +13,7 @@
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Gift} from '$lib/types';
-  import {goToErrorPage} from '$lib/util';
+  import {goToErrorPage, verifyResponse} from '$lib/util';
 
   export let adding = false;
   export let gift: Gift;
@@ -44,7 +44,7 @@
     const url = `/api/gift/${selectedGift.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, 'gift ' + selectedGift.id);
 
       selectedGift = null;
       dialog.close();
@@ -83,7 +83,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(gift)
       });
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, adding ? 'gift' : 'gift ' + gift.id);
 
       if (editing) {
         editing = false;
@@ -154,7 +154,8 @@
 
   <Dialog bind:dialog title="Confirm Delete">
     <div class="question">
-      Are you sure you want to delete {selectedGift ? selectedGift.name : ''}?
+      Are you sure you want to delete the gift
+      {selectedGift ? `"${selectedGift.name}"` : ''}?
     </div>
     <div class="buttons">
       <button on:click={deleteGift}>Yes</button>

@@ -11,7 +11,7 @@
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
   import type {Item, ItemKind} from '$lib/types';
-  import {goToErrorPage} from '$lib/util';
+  import {goToErrorPage, verifyResponse} from '$lib/util';
 
   export let item: Item;
   export let kind: ItemKind;
@@ -42,7 +42,7 @@
     const url = `/api/${kind}/${selectedItem.id}`;
     try {
       const res = await fetch(url, {method: 'DELETE'});
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, kind + ' ' + selectedItem.id);
 
       dispatch('delete', selectedItem.id);
       selectedItem = null;
@@ -82,7 +82,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(item)
       });
-      if (!res.ok) throw new Error(await res.text());
+      verifyResponse(res, kind + ' ' + item.id);
 
       // Move focus out of the input that has it.
       const form = event.target as HTMLFormElement;

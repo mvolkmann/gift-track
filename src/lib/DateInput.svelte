@@ -2,9 +2,9 @@
   import {getLastDayInMonth} from '$lib/util';
 
   export let editing = false;
-  export let month: number;
-  export let day: number;
-  export let year: number;
+  export let month: number | undefined = undefined;
+  export let day: number | undefined = undefined;
+  export let year: number | undefined = undefined;
   export let minYear = 1920;
   export let maxYear = new Date().getFullYear() + 1;
 
