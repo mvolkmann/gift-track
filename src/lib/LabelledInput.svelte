@@ -6,7 +6,7 @@
   export let readonly = false;
   export let required = false;
   export let type = 'text';
-  export let value: string | number;
+  export let value: string | number | undefined = undefined;
 
   type PropsType = {
     max?: number;
@@ -18,29 +18,31 @@
   $: if (min !== -1) props.min = min;
 </script>
 
-<div class="labelled-input">
-  <label for={name}>
-    {label}
-    {#if required && !readonly}
-      <span class="required">*</span>
-    {/if}
-  </label>
-  {#if type === 'date'}
-    <input {name} type="date" {readonly} {required} bind:value />
-  {:else if type === 'number'}
-    <input {name} type="number" {readonly} {required} bind:value {...props} />
-  {:else if type === 'url'}
-    {#if readonly}
-      <a alt={name} href={String(value)} rel="noopener" target="_blank">
-        {value}
-      </a>
+{#if !readonly || value}
+  <div class="labelled-input">
+    <label for={name}>
+      {label}
+      {#if required && !readonly}
+        <span class="required">*</span>
+      {/if}
+    </label>
+    {#if type === 'date'}
+      <input {name} type="date" {readonly} {required} bind:value />
+    {:else if type === 'number'}
+      <input {name} type="number" {readonly} {required} bind:value {...props} />
+    {:else if type === 'url'}
+      {#if readonly}
+        <a alt={name} href={String(value)} rel="noopener" target="_blank">
+          {value}
+        </a>
+      {:else}
+        <input {name} type="url" {required} bind:value {...props} />
+      {/if}
     {:else}
-      <input {name} type="url" {required} bind:value {...props} />
+      <input {name} type="text" {readonly} {required} bind:value />
     {/if}
-  {:else}
-    <input {name} type="text" {readonly} {required} bind:value />
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style>
   input {

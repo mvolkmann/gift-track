@@ -9,7 +9,8 @@ enum DataMode {
   MEMORY
 }
 
-const mode: DataMode = DataMode.DATABASE;
+//const mode: DataMode = DataMode.DATABASE;
+const mode: DataMode = DataMode.MEMORY;
 
 let deleteGiftPS: Statement;
 let deleteOccasionPS: Statement;
@@ -556,4 +557,5 @@ export function updatePerson(person: Person): boolean {
   return true;
 }
 
+//TODO: Don't call this if you want to continue using previous data.
 addData();
