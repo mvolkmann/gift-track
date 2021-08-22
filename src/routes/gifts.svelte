@@ -47,20 +47,13 @@
   };
 
   let selectedOccasion: Occasion | null = null;
-  let selectedPerson: Person | null = null;
-  $: console.log('gifts.svelte x: selectedPerson =', selectedPerson);
-  $: console.log('gifts.svelte x: selectedOccasion =', selectedOccasion);
-  $: newGift.personId = selectedPerson?.id;
   $: newGift.occasionId = selectedOccasion?.id;
 
-  onMount(() => {
-    // Restore the last selected person.
-    let id = Number(sessionStorage.getItem('person-id'));
-    if (id) selectedPerson = people.find(p => p.id === id) as Person;
+  let selectedPerson: Person | null = null;
+  $: newGift.personId = selectedPerson?.id;
 
-    // Restore the last selected occasion.
-    id = Number(sessionStorage.getItem('person-id'));
-    if (id) selectedOccasion = occasions.find(p => p.id === id) as Occasion;
+  onMount(() => {
+    restoreSelections();
   });
 
   function addGift() {
@@ -95,12 +88,23 @@
   }
 
   function loadGifts() {
+    restoreSelections();
     getGifts(selectedPerson, selectedOccasion);
+  }
+
+  function restoreSelections() {
+    // Restore the last selected person.
+    let id = Number(sessionStorage.getItem('person-id'));
+    if (id) selectedPerson = people.find(p => p.id === id) as Person;
+
+    // Restore the last selected occasion.
+    id = Number(sessionStorage.getItem('occasion-id'));
+    if (id) selectedOccasion = occasions.find(p => p.id === id) as Occasion;
   }
 
   function selectOccasion(event: CustomEvent) {
     selectedOccasion = event.detail;
-    sessionStorage.setItem('occasion-id', String(selectedPerson.id));
+    sessionStorage.setItem('occasion-id', String(selectedOccasion.id));
   }
 
   function selectPerson(event: CustomEvent) {

@@ -7,7 +7,6 @@
     faTrash
   } from '@fortawesome/free-solid-svg-icons';
   import {createEventDispatcher} from 'svelte';
-  import {goto} from '$app/navigation';
 
   import Dialog from '$lib/Dialog.svelte';
   import IconButton from '$lib/IconButton.svelte';
@@ -49,8 +48,7 @@
 
       selectedGift = null;
       dialog.close();
-      goto('/gifts');
-      dispatch('change');
+      history.back(); // back to gifts page
     } catch (e) {
       error = getErrorMessage(e);
     }
@@ -84,12 +82,13 @@
       });
       await verifyResponse(res, adding ? 'gift' : 'gift ' + gift.id);
 
+      dispatch('change');
+
       if (editing) {
         editing = false;
-        goto('/gifts');
+        history.back();
       } else {
         adding = false;
-        dispatch('change');
       }
     } catch (e) {
       error = getErrorMessage(e);

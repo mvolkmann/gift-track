@@ -484,11 +484,8 @@ export function getOccasion(id: number): Occasion {
 
 export function getPerson(id: number): Person {
   switch (mode) {
-    case DataMode.DATABASE: {
-      const person = (getPersonPS.get(id) as unknown) as Person;
-      console.log('data.ts getPerson: person =', person);
-      return person;
-    }
+    case DataMode.DATABASE:
+      return (getPersonPS.get(id) as unknown) as Person;
     case DataMode.LOCAL_STORAGE:
       throw new Error('localStorage mode is not supported yet.');
     case DataMode.MEMORY:
