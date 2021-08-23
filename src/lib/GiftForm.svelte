@@ -174,7 +174,6 @@
 
   .buttons button {
     background-color: var(--secondary-color);
-    flex-grow: 1;
   }
 
   form {
