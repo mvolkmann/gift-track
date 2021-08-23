@@ -5,7 +5,7 @@
 </script>
 
 {#if gift}
-  <div class="gift">
+  <div class="gift-detail">
     <div class="name">
       {gift.name}
       {#if gift.price}
@@ -29,7 +29,7 @@
     color: var(--primary-color);
   }
 
-  .gift {
+  .gift-detail {
     background-color: var(--label-color);
     border: none;
     border-radius: 0.5rem;
@@ -42,5 +42,9 @@
     color: var(--primary-color);
     font-size: 1.2rem;
     font-weight: bold;
+  }
+
+  .price {
+    color: black;
   }
 </style>

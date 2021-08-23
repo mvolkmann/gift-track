@@ -67,7 +67,7 @@
     />
   </div>
   <div class="buttons">
-    <button>Add</button>
+    <button>Save</button>
     <button type="button" on:click={() => dispatch('cancel')}>Cancel</button>
   </div>
   <div class="error">{error}</div>

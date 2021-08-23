@@ -2,8 +2,6 @@
   import {
     faAngleLeft,
     faPencilAlt,
-    faSave,
-    faTimes,
     faTrash
   } from '@fortawesome/free-solid-svg-icons';
   import {createEventDispatcher} from 'svelte';
@@ -22,7 +20,7 @@
   let dialog: HTMLDialogElement;
   let editing = false;
   let error = '';
-  let savedGift: Gift;
+  let savedGift: Gift = {...gift}; // a copy
   let selectedGift: Gift;
 
   let readonly = false;
@@ -32,7 +30,11 @@
     // Restore previous values.
     gift = savedGift;
 
-    editing = false;
+    if (adding) {
+      adding = false;
+    } else {
+      editing = false;
+    }
   }
 
   async function confirmDelete() {
@@ -135,8 +137,8 @@
 
     <div class="buttons">
       {#if adding || editing}
-        <IconButton icon={faSave} title="Save" type="submit" />
-        <IconButton icon={faTimes} title="Cancel" on:click={cancelEdit} />
+        <button>Save</button>
+        <button type="button" on:click={cancelEdit}>Cancel</button>
       {:else}
         <IconButton
           icon={faAngleLeft}
