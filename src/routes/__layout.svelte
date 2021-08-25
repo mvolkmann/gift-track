@@ -11,9 +11,6 @@
     {href: '/occasions', name: 'Occasions'},
     {href: '/gifts', name: 'Gifts'}
   ];
-
-  let link: Link;
-  $: link = links.find(link => link.href === $page.path);
 </script>
 
 <svelte:head>
