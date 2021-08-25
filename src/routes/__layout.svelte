@@ -21,8 +21,9 @@
   <h1>Gift Track</h1>
   <nav>
     {#each links as link}
-      <a href={link.href} class:active={link.href === $page.path}>{link.name}</a
-      >
+      <a href={link.href} class:active={link.href === $page.path}>
+        {link.name}
+      </a>
     {/each}
   </nav>
   <section class="slot">
