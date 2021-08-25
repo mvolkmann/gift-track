@@ -12,12 +12,12 @@
     {href: '/gifts', name: 'Gifts'}
   ];
 
+  let link: Link;
   $: link = links.find(link => link.href === $page.path);
-  $: pageName = link ? link.name : 'not found';
 </script>
 
 <svelte:head>
-  <title>Gift Track - {pageName}</title>
+  <title>Gift Track</title>
 </svelte:head>
 
 <main>
