@@ -110,33 +110,33 @@ function addData() {
     day: 25
   });
 
-  //   addGift({
-  //     description: 'shop at REI',
-  //     name: 'hiking boots',
-  //     occasionId: christmas.id,
-  //     personId: tami.id,
-  //     price: 120,
-  //     url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
-  //   });
+  addGift({
+    description: 'shop at REI',
+    name: 'hiking boots',
+    occasionId: christmas.id,
+    personId: tami.id,
+    price: 120,
+    url: 'https://www.rei.com/search?q=hiking+boots+-+women%27'
+  });
 
-  //   addGift({
-  //     description: 'Momentum',
-  //     name: 'water bottle',
-  //     occasionId: birthday.id,
-  //     personId: tami.id,
-  //     price: 15,
-  //     url:
-  //       'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
-  //   });
+  addGift({
+    description: 'Momentum',
+    name: 'water bottle',
+    occasionId: birthday.id,
+    personId: tami.id,
+    price: 15,
+    url:
+      'https://www.momentumcycles.com/product/salsa-purist-insulated-water-bottle-362281-1.htm'
+  });
 
-  //   addGift({
-  //     description: 'Get the latest when it comes out.',
-  //     name: 'iPhone',
-  //     occasionId: birthday.id,
-  //     personId: tami.id,
-  //     price: 1000,
-  //     url: 'https://www.apple.com/iphone/'
-  //   });
+  addGift({
+    description: 'Get the latest when it comes out.',
+    name: 'iPhone',
+    occasionId: birthday.id,
+    personId: tami.id,
+    price: 1000,
+    url: 'https://www.apple.com/iphone/'
+  });
 }
 
 export function addGift(gift: Gift): Gift {
