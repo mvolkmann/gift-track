@@ -1,4 +1,4 @@
-//import path from 'path';
+import path from 'path';
 import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,9 +14,7 @@ const config = {
     vite: {
       resolve: {
         alias: {
-          //TODO: This didn't work, even after adding a "$routes"
-          //TODO: path in both jsconfig.json and tsconfig.json.
-          //$routes: path.resolve('./src/routes')
+          $routes: path.resolve('src/routes')
         }
       }
     }

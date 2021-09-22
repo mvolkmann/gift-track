@@ -1,6 +1,6 @@
 import type {Request} from '@sveltejs/kit';
 import type {Person, PersonResponse} from '$lib/types';
-import {deletePerson, getPerson, updatePerson} from '$lib/../routes/api/data';
+import {deletePerson, getPerson, updatePerson} from '$routes/api/data';
 
 export async function del(request: Request): Promise<PersonResponse> {
   const id = Number(request.params.personId);
