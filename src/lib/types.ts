@@ -9,8 +9,7 @@ export type Gift = {
   url?: string;
 };
 
-export type GiftMap = Record<number, Gift>;
-//export type GiftMap = {[id: string]: Gift}; //TODO: Is this better?
+export type GiftMap = {[id: string]: Gift};
 
 export type GiftResponse = {body?: Gift; status?: number};
 export type OccasionResponse = {body?: Occasion; status?: number};
@@ -30,12 +29,7 @@ export enum ItemKind {
   PERSON = 'person'
 }
 
-export type Obj = Record<string, unknown>;
-/*TODO: Is this better?
-export type Obj = {
-  [key: string]: unknown;
-};
-*/
+export type Obj = {[key: string]: unknown};
 
 export type Occasion = Item;
 export type OccasionMap = Record<number, Occasion>;
