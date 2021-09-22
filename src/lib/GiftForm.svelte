@@ -10,7 +10,7 @@
   import IconButton from '$lib/IconButton.svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Gift} from '$lib/types';
-  import {getErrorMessage, verifyResponse} from '$lib/util';
+  import {getErrorMessage, goToErrorPage, verifyResponse} from '$lib/util';
 
   export let adding = false;
   export let gift: Gift;
@@ -47,12 +47,13 @@
     try {
       const res = await fetch(url, {method: 'DELETE'});
       await verifyResponse(res, 'gift ' + selectedGift.id);
-
       selectedGift = null;
-      dialog.close();
       history.back(); // back to gifts page
     } catch (e) {
       error = getErrorMessage(e);
+      goToErrorPage(error);
+    } finally {
+      dialog.close();
     }
   }
 

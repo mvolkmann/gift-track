@@ -55,7 +55,7 @@ export function sortObjects(
   return objects;
 }
 
-export async function verifyResponse(
+export function verifyResponse(
   res: globalThis.Response,
   target: string
 ): Promise<string> {

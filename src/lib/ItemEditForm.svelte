@@ -43,12 +43,12 @@
     try {
       const res = await fetch(url, {method: 'DELETE'});
       await verifyResponse(res, kind + ' ' + selectedItem.id);
-
       dispatch('delete', selectedItem.id);
       selectedItem = null;
-      dialog.close();
     } catch (e) {
       goToErrorPage(e);
+    } finally {
+      dialog.close();
     }
   }
 

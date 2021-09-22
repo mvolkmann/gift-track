@@ -234,26 +234,20 @@ function databaseSetup() {
 }
 
 export function deleteGift(id: number): boolean {
-  deleteGiftPS.run(id);
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  const result = deleteGiftPS.run(id);
+  return result.changes === 1;
 }
 
 export function deleteOccasion(id: number): boolean {
   // This does a cascading delete, deleting all gifts for this occasion.
-  deleteOccasionPS.run(id);
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  const result = deleteOccasionPS.run(id);
+  return result.changes === 1;
 }
 
 export function deletePerson(id: number): boolean {
   // This does a cascading delete, deleting all gifts for this person.
-  deletePersonPS.run(id);
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  const result = deletePersonPS.run(id);
+  return result.changes === 1;
 }
 
 export function getAllGifts(): Gift[] {
