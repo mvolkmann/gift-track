@@ -285,7 +285,7 @@ export function getPerson(id: number): Person {
 }
 
 export function updateGift(gift: Gift): boolean {
-  updateGiftPS.run(
+  const result = updateGiftPS.run(
     gift.description,
     gift.location,
     gift.name,
@@ -295,35 +295,29 @@ export function updateGift(gift: Gift): boolean {
     gift.url,
     gift.id
   );
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  return result.changes === 1;
 }
 
 export function updateOccasion(occasion: Occasion): boolean {
-  updateOccasionPS.run(
+  const result = updateOccasionPS.run(
     occasion.name,
     occasion.month,
     occasion.day,
     occasion.year,
     occasion.id
   );
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  return result.changes === 1;
 }
 
 export function updatePerson(person: Person): boolean {
-  updatePersonPS.run(
+  const result = updatePersonPS.run(
     person.name,
     person.month,
     person.day,
     person.year,
     person.id
   );
-
-  //TODO: How can this return false if the id is not found?
-  return true;
+  return result.changes === 1;
 }
 
 //TODO: Don't call this if you want to continue using previous data.

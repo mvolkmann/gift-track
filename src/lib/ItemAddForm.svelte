@@ -2,13 +2,17 @@
   import {createEventDispatcher} from 'svelte';
   import LabelledInput from '$lib/LabelledInput.svelte';
   import type {Item, ItemKind} from '$lib/types';
-  import {getErrorMessage, getLastDayInMonth, verifyResponse} from '$lib/util';
+  import {
+    getErrorMessage,
+    getLastDayInMonth,
+    goToErrorPage,
+    verifyResponse
+  } from '$lib/util';
 
   export let kind: ItemKind;
 
   const dispatch = createEventDispatcher();
 
-  let error = '';
   let name = '';
   let month = 1;
   let day = 1;
@@ -29,11 +33,10 @@
         body: JSON.stringify(item)
       });
       await verifyResponse(res, kind);
-
       const newItem = await res.json();
       dispatch('add', newItem);
     } catch (e) {
-      error = getErrorMessage(e);
+      goToErrorPage(getErrorMessage(e));
     }
   }
 </script>
@@ -70,7 +73,6 @@
     <button>Save</button>
     <button type="button" on:click={() => dispatch('cancel')}>Cancel</button>
   </div>
-  <div class="error">{error}</div>
 </form>
 
 <style>

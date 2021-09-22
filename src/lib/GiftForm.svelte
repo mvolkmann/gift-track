@@ -19,7 +19,6 @@
 
   let dialog: HTMLDialogElement;
   let editing = false;
-  let error = '';
   let savedGift: Gift = {...gift}; // a copy
   let selectedGift: Gift;
 
@@ -50,8 +49,7 @@
       selectedGift = null;
       history.back(); // back to gifts page
     } catch (e) {
-      error = getErrorMessage(e);
-      goToErrorPage(error);
+      goToErrorPage(getErrorMessage(e));
     } finally {
       dialog.close();
     }
@@ -84,9 +82,7 @@
         body: JSON.stringify(gift)
       });
       await verifyResponse(res, adding ? 'gift' : 'gift ' + gift.id);
-
       dispatch('change');
-
       if (editing) {
         editing = false;
         history.back();
@@ -94,7 +90,7 @@
         adding = false;
       }
     } catch (e) {
-      error = getErrorMessage(e);
+      goToErrorPage(getErrorMessage(e));
     }
   }
 </script>
@@ -151,7 +147,6 @@
         <IconButton icon={faTrash} title="Delete" on:click={confirmDelete} />
       {/if}
     </div>
-    <div class="error">{error}</div>
   </form>
 
   <Dialog bind:dialog title="Confirm Delete">
