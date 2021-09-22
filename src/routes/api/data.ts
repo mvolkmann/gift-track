@@ -3,17 +3,6 @@
 import sqlite from 'better-sqlite3';
 import type {RunResult, Statement} from 'better-sqlite3';
 
-//TODO: localStorage is not defined server-side!
-enum DataMode {
-  DATABASE,
-  LOCAL_STORAGE,
-  MEMORY
-}
-
-const mode: DataMode = DataMode.DATABASE;
-//const mode: DataMode = DataMode.MEMORY;
-//const mode: DataMode = DataMode.LOCAL_STORAGE;
-
 let deleteGiftPS: Statement;
 let deleteOccasionPS: Statement;
 let deletePersonPS: Statement;
@@ -33,16 +22,10 @@ let updatePersonPS: Statement;
 
 import type {Gift, Occasion, Person} from '$lib/types';
 
-let lastGiftId = 0;
-let lastOccasionId = 0;
-let lastPersonId = 0;
-
-const giftMap: {[id: number]: Gift} = {};
-const occasionMap: {[id: number]: Occasion} = {};
-const personMap: {[id: number]: Person} = {};
-
 function addData() {
-  if (mode === DataMode.DATABASE) databaseSetup();
+  databaseSetup();
+
+  // Create some initial data.
 
   const tami = addPerson({
     name: 'Tami',
@@ -57,48 +40,6 @@ function addData() {
     day: 16,
     year: 1961
   });
-
-  //   addPerson({
-  //     name: 'Amanda',
-  //     month: 7,
-  //     day: 22,
-  //     year: 1985
-  //   });
-
-  //   addPerson({
-  //     name: 'Jeremy',
-  //     month: 4,
-  //     day: 30,
-  //     year: 1987
-  //   });
-
-  //   addPerson({
-  //     name: 'RC',
-  //     month: 2,
-  //     day: 27,
-  //     year: 1981
-  //   });
-
-  //   addPerson({
-  //     name: 'Meghan',
-  //     month: 7,
-  //     day: 9,
-  //     year: 1988
-  //   });
-
-  //   addPerson({
-  //     name: 'Richard',
-  //     month: 7,
-  //     day: 28,
-  //     year: 1940
-  //   });
-
-  //   addPerson({
-  //     name: 'Pat',
-  //     month: 2,
-  //     day: 16,
-  //     year: 1947
-  //   });
 
   const birthday = addOccasion({
     name: 'Birthday'
@@ -140,135 +81,56 @@ function addData() {
 }
 
 export function addGift(gift: Gift): Gift {
-  const name = gift.name.toLowerCase();
-
-  switch (mode) {
-    case DataMode.DATABASE:
-      try {
-        const result: RunResult = insertGiftPS.run(
-          gift.description,
-          gift.location,
-          gift.name,
-          gift.occasionId,
-          gift.personId,
-          gift.price,
-          gift.url
-        );
-        gift.id = result.lastInsertRowid as number;
-      } catch (e) {
-        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
-        throw isDuplicate ? new Error(getDuplicateMessage(gift)) : e;
-      }
-      break;
-
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      giftMap[gift.id] = gift;
-      localStorage.setItem('gifts', JSON.stringify(giftMap));
-      break;
-    }
-
-    case DataMode.MEMORY:
-      if (
-        Object.values(giftMap).some(
-          g =>
-            g.name.toLowerCase() === name &&
-            g.personId === gift.personId &&
-            g.occasionId === gift.occasionId
-        )
-      ) {
-        const personName = personMap[gift.personId].name;
-        const occasionName = occasionMap[gift.occasionId].name;
-        throw new Error(
-          `duplicate ${gift.name} ${occasionName} gift for ${personName}`
-        );
-      }
-
-      gift.id = ++lastGiftId;
-      giftMap[lastGiftId] = gift;
-      break;
+  try {
+    const result: RunResult = insertGiftPS.run(
+      gift.description,
+      gift.location,
+      gift.name,
+      gift.occasionId,
+      gift.personId,
+      gift.price,
+      gift.url
+    );
+    gift.id = result.lastInsertRowid as number;
+  } catch (e) {
+    const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+    throw isDuplicate ? new Error(getDuplicateMessage(gift)) : e;
   }
 
   return gift;
 }
 
 export function addOccasion(occasion: Occasion): Occasion {
-  switch (mode) {
-    case DataMode.DATABASE:
-      try {
-        const result: RunResult = insertOccasionPS.run(
-          occasion.name,
-          occasion.month,
-          occasion.day,
-          occasion.year
-        );
-        occasion.id = result.lastInsertRowid as number;
-      } catch (e) {
-        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
-        throw isDuplicate
-          ? new Error('duplicate occasion name ' + occasion.name)
-          : e;
-      }
-      break;
-
-    case DataMode.LOCAL_STORAGE: {
-      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
-      occasionMap[occasion.id] = occasion;
-      localStorage.setItem('occasions', JSON.stringify(occasionMap));
-      break;
-    }
-
-    case DataMode.MEMORY: {
-      const name = occasion.name.toLowerCase();
-      if (Object.values(occasionMap).some(o => o.name.toLowerCase() === name)) {
-        throw new Error('duplicate occasion name ' + occasion.name);
-      }
-
-      occasion.id = ++lastOccasionId;
-      occasionMap[lastOccasionId] = occasion;
-      break;
-    }
+  try {
+    const result: RunResult = insertOccasionPS.run(
+      occasion.name,
+      occasion.month,
+      occasion.day,
+      occasion.year
+    );
+    occasion.id = result.lastInsertRowid as number;
+  } catch (e) {
+    const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+    throw isDuplicate
+      ? new Error('duplicate occasion name ' + occasion.name)
+      : e;
   }
 
   return occasion;
 }
 
 export function addPerson(person: Person): Person {
-  switch (mode) {
-    case DataMode.DATABASE:
-      try {
-        const result: RunResult = insertPersonPS.run(
-          person.name,
-          person.month,
-          person.day,
-          person.year
-        );
-        person.id = result.lastInsertRowid as number;
-      } catch (e) {
-        const isDuplicate = e.toString().includes('UNIQUE constraint failed');
-        throw isDuplicate
-          ? new Error('duplicate person name ' + person.name)
-          : e;
-      }
-      break;
-
-    case DataMode.LOCAL_STORAGE: {
-      const personMap = JSON.parse(localStorage.getItem('people'));
-      personMap[person.id] = person;
-      localStorage.setItem('people', JSON.stringify(personMap));
-      break;
-    }
-
-    case DataMode.MEMORY: {
-      const name = person.name.toLowerCase();
-      if (Object.values(personMap).some(o => o.name.toLowerCase() === name)) {
-        throw new Error('duplicate person name ' + person.name);
-      }
-
-      person.id = ++lastPersonId;
-      personMap[lastPersonId] = person;
-      break;
-    }
+  try {
+    const result: RunResult = insertPersonPS.run(
+      person.name,
+      person.month,
+      person.day,
+      person.year
+    );
+    person.id = result.lastInsertRowid as number;
+  } catch (e) {
+    const isDuplicate = e.toString().includes('UNIQUE constraint failed');
+    throw isDuplicate ? new Error('duplicate person name ' + person.name) : e;
   }
 
   return person;
@@ -372,80 +234,30 @@ function databaseSetup() {
 }
 
 export function deleteGift(id: number): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      deleteGiftPS.run(id);
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      delete giftMap[id];
-      localStorage.setItem('gifts', JSON.stringify(giftMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!giftMap[id]) return false;
-      delete giftMap[id];
-  }
+  deleteGiftPS.run(id);
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
 export function deleteOccasion(id: number): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      // This does a cascading delete, deleting all gifts for this occasion.
-      deleteOccasionPS.run(id);
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
-      delete occasionMap[id];
-      localStorage.setItem('occasions', JSON.stringify(occasionMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!occasionMap[id]) return false;
-      delete occasionMap[id];
-      // Delete all the gifts for this occasion.
-      for (const gift of Object.values(giftMap)) {
-        if (gift.occasionId === id) delete giftMap[gift.id];
-      }
-  }
+  // This does a cascading delete, deleting all gifts for this occasion.
+  deleteOccasionPS.run(id);
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
 export function deletePerson(id: number): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      // This does a cascading delete, deleting all gifts for this person.
-      deletePersonPS.run(id);
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const personMap = JSON.parse(localStorage.getItem('people'));
-      delete personMap[id];
-      localStorage.setItem('people', JSON.stringify(personMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!personMap[id]) return false;
-      delete personMap[id];
-      // Delete all the gifts for this person.
-      for (const gift of Object.values(giftMap)) {
-        if (gift.personId === id) delete giftMap[gift.id];
-      }
-  }
+  // This does a cascading delete, deleting all gifts for this person.
+  deletePersonPS.run(id);
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
 export function getAllGifts(): Gift[] {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getAllGiftsPS.all() as unknown) as Gift[];
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      return Object.values(giftMap);
-    }
-    case DataMode.MEMORY:
-      return Object.values(giftMap);
-  }
+  return (getAllGiftsPS.all() as unknown) as Gift[];
 }
 
 function getDuplicateMessage(gift: Gift) {
@@ -455,160 +267,68 @@ function getDuplicateMessage(gift: Gift) {
 }
 
 export function getGifts(personId: number, occasionId: number): Gift[] {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getGiftsPS.all(personId, occasionId) as unknown) as Gift[];
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      const gifts = Object.values(giftMap) as Gift[];
-      return gifts.filter(
-        gift => gift.personId === personId && gift.occasionId === occasionId
-      );
-    }
-    case DataMode.MEMORY:
-      return Object.values(giftMap).filter(
-        gift => gift.personId === personId && gift.occasionId === occasionId
-      );
-  }
+  return (getGiftsPS.all(personId, occasionId) as unknown) as Gift[];
 }
 
 export function getAllOccasions(): Occasion[] {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getAllOccasionsPS.all() as unknown) as Occasion[];
-    case DataMode.LOCAL_STORAGE: {
-      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
-      return Object.values(occasionMap);
-    }
-    case DataMode.MEMORY:
-      return Object.values(occasionMap);
-  }
+  return (getAllOccasionsPS.all() as unknown) as Occasion[];
 }
 
 export function getAllPeople(): Person[] {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getAllPeoplePS.all() as unknown) as Person[];
-    case DataMode.LOCAL_STORAGE: {
-      const personMap = JSON.parse(localStorage.getItem('people'));
-      return Object.values(personMap);
-    }
-    case DataMode.MEMORY:
-      return Object.values(personMap);
-  }
+  return (getAllPeoplePS.all() as unknown) as Person[];
 }
 
 export function getGift(id: number): Gift {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getGiftPS.get(id) as unknown) as Gift;
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      return giftMap[id];
-    }
-    case DataMode.MEMORY:
-      return giftMap[id];
-  }
+  return (getGiftPS.get(id) as unknown) as Gift;
 }
 
 export function getOccasion(id: number): Occasion {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getOccasionPS.get(id) as unknown) as Occasion;
-    case DataMode.LOCAL_STORAGE: {
-      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
-      return occasionMap[id];
-    }
-    case DataMode.MEMORY:
-      return occasionMap[id];
-  }
+  return (getOccasionPS.get(id) as unknown) as Occasion;
 }
 
 export function getPerson(id: number): Person {
-  switch (mode) {
-    case DataMode.DATABASE:
-      return (getPersonPS.get(id) as unknown) as Person;
-    case DataMode.LOCAL_STORAGE: {
-      const personMap = JSON.parse(localStorage.getItem('people'));
-      return personMap[id];
-    }
-    case DataMode.MEMORY:
-      return personMap[id];
-  }
+  return (getPersonPS.get(id) as unknown) as Person;
 }
 
 export function updateGift(gift: Gift): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      updateGiftPS.run(
-        gift.description,
-        gift.location,
-        gift.name,
-        gift.occasionId,
-        gift.personId,
-        gift.price,
-        gift.url,
-        gift.id
-      );
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const giftMap = JSON.parse(localStorage.getItem('gifts'));
-      giftMap[gift.id] = gift;
-      localStorage.setItem('gifts', JSON.stringify(giftMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!giftMap[gift.id]) return false;
-      giftMap[gift.id] = gift;
-  }
+  updateGiftPS.run(
+    gift.description,
+    gift.location,
+    gift.name,
+    gift.occasionId,
+    gift.personId,
+    gift.price,
+    gift.url,
+    gift.id
+  );
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
 export function updateOccasion(occasion: Occasion): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      updateOccasionPS.run(
-        occasion.name,
-        occasion.month,
-        occasion.day,
-        occasion.year,
-        occasion.id
-      );
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const occasionMap = JSON.parse(localStorage.getItem('occasions'));
-      occasionMap[occasion.id] = occasion;
-      localStorage.setItem('occasions', JSON.stringify(occasionMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!occasionMap[occasion.id]) return false;
-      occasionMap[occasion.id] = occasion;
-  }
+  updateOccasionPS.run(
+    occasion.name,
+    occasion.month,
+    occasion.day,
+    occasion.year,
+    occasion.id
+  );
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
 export function updatePerson(person: Person): boolean {
-  switch (mode) {
-    case DataMode.DATABASE:
-      updatePersonPS.run(
-        person.name,
-        person.month,
-        person.day,
-        person.year,
-        person.id
-      );
-      break;
-    case DataMode.LOCAL_STORAGE: {
-      const personMap = JSON.parse(localStorage.getItem('people'));
-      personMap[person.id] = person;
-      localStorage.setItem('people', JSON.stringify(personMap));
-      break;
-    }
-    case DataMode.MEMORY:
-      if (!personMap[person.id]) return false;
-      personMap[person.id] = person;
-  }
+  updatePersonPS.run(
+    person.name,
+    person.month,
+    person.day,
+    person.year,
+    person.id
+  );
+
+  //TODO: How can this return false if the id is not found?
   return true;
 }
 
