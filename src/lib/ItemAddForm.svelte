@@ -96,7 +96,7 @@
   }
 
   .date-inputs :global(input[name='year']) {
-    width: 3.5rem;
+    width: 4rem;
   }
 
   form {
